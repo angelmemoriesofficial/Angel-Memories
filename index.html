@@ -39,7 +39,7 @@ input{padding:12px;border-radius:8px;border:1px solid #d5ac48;margin:8px;max-wid
 .card{background:#10254c;border:1px solid #d5ac48;border-radius:12px;overflow:hidden}
 .card img,.card video{width:100%;height:180px;object-fit:cover}
 .card p{padding:8px;overflow-wrap:anywhere}
-.empty{text-align:center;color:#d8d8e5;padding:25px}
+.empty{text-align:center;color:#d8d8e5;padding:25px}\n.admin-tools{max-width:1100px;margin:20px auto;padding:20px;background:#10254c;border:1px solid #d5ac48;border-radius:16px}.admin-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px;border-bottom:1px solid #52617d}.admin-row small{display:block;color:#d4d9eb;overflow-wrap:anywhere}.danger{background:#9f2634;color:white;border-color:#ffb5b5}
 .about{text-align:center;line-height:1.9;color:#e0e4f2}
 footer{text-align:center;background:#020b20;border-top:2px solid var(--gold);padding:25px}
 footer img{width:100px;height:80px;object-fit:contain}
@@ -75,7 +75,7 @@ footer p{color:#ddd}
 <section id="gallery"><h2 class="section-title">📸 Photo Gallery</h2><input id="search" type="search" placeholder="Search your memories..." oninput="filterGallery()"><div class="gallery" id="photos"><p class="empty">আপনার ছবিগুলো এখানে দেখা যাবে।</p></div></section>
 <section id="videos"><h2 class="section-title">🎬 Video Gallery</h2><div class="gallery" id="videosList"><p class="empty">আপনার ভিডিওগুলো এখানে দেখা যাবে।</p></div></section>
 <section id="documents"><h2 class="section-title">📁 Documents</h2><div class="gallery" id="documentsList"><p class="empty">আপনার ডকুমেন্ট এখানে দেখা যাবে।</p></div></section>
-<section id="about"><h2 class="section-title">💙 About Angel Memories</h2><div class="panel about"><img src="logo.png" width="110" alt="Angel Memories Logo"><p>Welcome to Angel Memories.</p><p>একটি সুন্দর ডিজিটাল জায়গা, যেখানে আপনার প্রিয় ছবি, ভিডিও ও গুরুত্বপূর্ণ ডকুমেন্ট সাজিয়ে রাখতে পারবেন।</p><h3 style="color:#ffd45c">Your Story, Your Memories</h3></div></section>
+<section id="adminDashboard" style="display:none"><h2 class="section-title">🛡️ Admin Dashboard</h2><div class="admin-tools"><p id="adminSummary">Loading administration data...</p><div id="adminFiles"><p class="empty">ফাইল লোড হচ্ছে...</p></div></div></section>\n<section id="about"><h2 class="section-title">💙 About Angel Memories</h2><div class="panel about"><img src="logo.png" width="110" alt="Angel Memories Logo"><p>Welcome to Angel Memories.</p><p>একটি সুন্দর ডিজিটাল জায়গা, যেখানে আপনার প্রিয় ছবি, ভিডিও ও গুরুত্বপূর্ণ ডকুমেন্ট সাজিয়ে রাখতে পারবেন।</p><h3 style="color:#ffd45c">Your Story, Your Memories</h3></div></section>
 <section id="contact"><h2 class="section-title">📩 Contact Us</h2><div class="panel"><img src="logo.png" width="90" alt="Angel Memories Logo"><p>Angel Memories Support</p><p>আপনার মতামত ও সহযোগিতার জন্য আমাদের সঙ্গে যোগাযোগ করুন।</p></div></section>
 </main>
 <footer><img src="logo.png" alt="Angel Memories Logo"><h3 style="color:#ffd45c">Angel Memories</h3><p>Your Story, Your Memories</p><p>© 2026 Angel Memories. All Rights Reserved.</p></footer>
@@ -86,7 +86,7 @@ const SUPABASE_URL='https://inlysjhdyezvsrnlfpls.supabase.co';
 const SUPABASE_KEY='sb_publishable_p2PEvAfW73p5w_7VAPrddw_ErteRFY3';
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let authMode='login';
-let currentUser=null;
+let currentUser=null;\nlet currentRole='user';
 function openLogin(){document.getElementById('loginModal').style.display='flex';}
 function closeLogin(){document.getElementById('loginModal').style.display='none';}
 function toggleAuthMode(){authMode=authMode==='login'?'signup':'login';document.getElementById('authHeading').textContent=authMode==='login'?'Login to your account':'Create your Angel Memories account';document.getElementById('authSubmit').textContent=authMode==='login'?'Login':'Sign Up';document.getElementById('authToggle').textContent=authMode==='login'?'Create new account':'Already have an account? Login';document.getElementById('authMessage').textContent='';}
@@ -106,12 +106,12 @@ async function submitAuth(){
  finally{btn.disabled=false;}
 }
 async function refreshSession(){
- const {data}=await sb.auth.getSession();currentUser=data.session?.user||null;
+ const {data}=await sb.auth.getSession();currentUser=data.session?.user||null;\n currentRole='user';if(currentUser){const profile=await sb.from('profiles').select('role').eq('id',currentUser.id).maybeSingle();if(!profile.error&&profile.data?.role)currentRole=profile.data.role;}
  const headerBtn=document.querySelector('header>button');
  if(headerBtn){headerBtn.textContent=currentUser?'Logout':'👤 Login';headerBtn.onclick=currentUser?signOut:openLogin;}
  document.getElementById('upload').style.display=currentUser?'block':'none';
  if(currentUser){document.getElementById('status').textContent='Signed in: '+currentUser.email;await loadMyFiles();}
- else {document.getElementById('status').textContent='ফাইল আপলোড ও দেখতে Login করুন।';clearGalleries();}
+ else {document.getElementById('status').textContent='ফাইল আপলোড ও দেখতে Login করুন।';document.getElementById('adminDashboard').style.display='none';document.getElementById('adminFiles').innerHTML='';clearGalleries();}
 }
 async function signOut(){await sb.auth.signOut();await refreshSession();}
 function clearGalleries(){['photos','videosList','documentsList'].forEach(id=>document.getElementById(id).innerHTML='<p class="empty">Login করলে আপনার ফাইল এখানে দেখা যাবে।</p>');}
@@ -131,6 +131,36 @@ async function loadMyFiles(){
   const name=document.createElement('p');name.textContent=item.file_name;card.appendChild(name);
   const dl=document.createElement('button');dl.textContent='⬇ Download';dl.style.margin='8px';dl.onclick=()=>{const a=document.createElement('a');a.href=url;a.download=item.file_name;a.click()};card.appendChild(dl);
   addCard(targetFor(item.content_type),card);
+ }
+}
+async function loadAdminFiles(){
+ const host=document.getElementById('adminFiles'),summary=document.getElementById('adminSummary');
+ host.innerHTML='';summary.textContent='সব ব্যবহারকারীর ফাইলের তালিকা';
+ const {data:rows,error}=await sb.from('media_items').select('*').order('created_at',{ascending:false});
+ if(error){host.textContent='তথ্য লোড হয়নি: '+error.message;return}
+ summary.textContent='মোট ফাইল: '+(rows?.length||0);
+ if(!rows?.length){host.innerHTML='<p class="empty">এখনো কোনো ফাইল আপলোড হয়নি।</p>';return}
+ for(const item of rows){
+  const row=document.createElement('div');row.className='admin-row';
+  const info=document.createElement('div'),name=document.createElement('strong'),meta=document.createElement('small');
+  name.textContent=item.file_name;meta.textContent='User ID: '+item.user_id+' • '+new Date(item.created_at).toLocaleString();
+  info.append(name,meta);row.appendChild(info);
+  const actions=document.createElement('div');
+  const download=document.createElement('button');download.textContent='⬇ Download';download.onclick=async()=>{
+   const {data:blob,error}=await sb.storage.from('angel-memories').download(item.object_path);
+   if(error){alert('ডাউনলোড ব্যর্থ: '+error.message);return}
+   const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=item.file_name;a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);
+  };
+  const del=document.createElement('button');del.textContent='🗑 Delete';del.className='danger';del.style.marginLeft='8px';del.onclick=async()=>{
+   if(!confirm('এই ফাইলটি স্থায়ীভাবে ডিলিট করবেন?'))return;
+   del.disabled=true;
+   const removed=await sb.storage.from('angel-memories').remove([item.object_path]);
+   if(removed.error){alert('Storage থেকে ডিলিট হয়নি: '+removed.error.message);del.disabled=false;return}
+   const deleted=await sb.from('media_items').delete().eq('id',item.id);
+   if(deleted.error){alert('ফাইলের তথ্য ডিলিট হয়নি: '+deleted.error.message);del.disabled=false;return}
+   await loadAdminFiles();await loadMyFiles();
+  };
+  actions.append(download,del);row.appendChild(actions);host.appendChild(row);
  }
 }
 async function uploadFiles(){
