@@ -71,7 +71,7 @@ footer p{color:#ddd}
 <section><h2 class="section-title">✨ Your Memories, Our Care ✨</h2><p class="subtitle">আপনার বিশেষ মুহূর্তগুলো যত্নে রাখুন চিরকাল...</p>
  <div class="features"><div class="feature"><span>📸</span>Photo Gallery</div><div class="feature"><span>🎬</span>Video Gallery</div><div class="feature"><span>📁</span>Documents</div><div class="feature"><span>🛡️</span>Secure & Private</div><div class="feature"><span>☁️</span>Cloud Storage</div><div class="feature"><span>⚡</span>Fast Access</div><div class="feature"><span>👨‍👩‍👧</span>Share Together</div></div>
 </section>
-<section id="upload"><h2 class="section-title">☁ Upload Your Memories</h2><div class="panel"><p>ছবি, ভিডিও অথবা ডকুমেন্ট নির্বাচন করুন</p><input type="file" id="fileInput" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt"><br><button onclick="uploadFiles()">Upload Files</button><p id="status"></p></div></section>
+<section id="upload" style="display:none"><h2 class="section-title">☁ Upload Your Memories</h2><div class="panel"><p>ছবি, ভিডিও অথবা ডকুমেন্ট নির্বাচন করুন</p><input type="file" id="fileInput" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt"><br><button onclick="uploadFiles()">Upload Files</button><p id="status"></p></div></section>
 <section id="gallery"><h2 class="section-title">📸 Photo Gallery</h2><input id="search" type="search" placeholder="Search your memories..." oninput="filterGallery()"><div class="gallery" id="photos"><p class="empty">আপনার ছবিগুলো এখানে দেখা যাবে।</p></div></section>
 <section id="videos"><h2 class="section-title">🎬 Video Gallery</h2><div class="gallery" id="videosList"><p class="empty">আপনার ভিডিওগুলো এখানে দেখা যাবে।</p></div></section>
 <section id="documents"><h2 class="section-title">📁 Documents</h2><div class="gallery" id="documentsList"><p class="empty">আপনার ডকুমেন্ট এখানে দেখা যাবে।</p></div></section>
@@ -79,26 +79,79 @@ footer p{color:#ddd}
 <section id="contact"><h2 class="section-title">📩 Contact Us</h2><div class="panel"><img src="logo.png" width="90" alt="Angel Memories Logo"><p>Angel Memories Support</p><p>আপনার মতামত ও সহযোগিতার জন্য আমাদের সঙ্গে যোগাযোগ করুন।</p></div></section>
 </main>
 <footer><img src="logo.png" alt="Angel Memories Logo"><h3 style="color:#ffd45c">Angel Memories</h3><p>Your Story, Your Memories</p><p>© 2026 Angel Memories. All Rights Reserved.</p></footer>
-<div class="modal" id="loginModal"><div class="modalbox"><button class="close" onclick="closeLogin()">✕</button><img src="logo.png" alt="Angel Memories Logo"><h2>Angel Memories</h2><p>Welcome Back!</p><p style="font-size:12px;color:#ddd">Secure Login চালু করতে Supabase Auth যুক্ত করতে হবে।</p><button onclick="closeLogin()">Close</button></div></div>
+<div class="modal" id="loginModal"><div class="modalbox"><button class="close" onclick="closeLogin()">✕</button><img src="logo.png" alt="Angel Memories Logo"><h2>Angel Memories</h2><p id="authHeading">Login to your account</p><input id="authEmail" type="email" placeholder="Email address" autocomplete="email"><br><input id="authPassword" type="password" placeholder="Password (minimum 6 characters)" autocomplete="current-password"><br><button id="authSubmit" onclick="submitAuth()">Login</button><p><button style="background:#263c63;color:white" onclick="toggleAuthMode()" id="authToggle">Create new account</button></p><p id="authMessage" style="font-size:13px;color:#ffe58a"></p></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-function openLogin(){document.getElementById('loginModal').style.display='flex'}
-function closeLogin(){document.getElementById('loginModal').style.display='none'}
-function addCard(id,card){const area=document.getElementById(id);if(area.querySelector('.empty'))area.innerHTML='';area.prepend(card)}
-function uploadFiles(){
- const files=Array.from(document.getElementById('fileInput').files);
- const status=document.getElementById('status');
+const SUPABASE_URL='https://inlysjhdyezvsrnlfpls.supabase.co';
+const SUPABASE_KEY='sb_publishable_p2PEvAfW73p5w_7VAPrddw_ErteRFY3';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let authMode='login';
+let currentUser=null;
+function openLogin(){document.getElementById('loginModal').style.display='flex';}
+function closeLogin(){document.getElementById('loginModal').style.display='none';}
+function toggleAuthMode(){authMode=authMode==='login'?'signup':'login';document.getElementById('authHeading').textContent=authMode==='login'?'Login to your account':'Create your Angel Memories account';document.getElementById('authSubmit').textContent=authMode==='login'?'Login':'Sign Up';document.getElementById('authToggle').textContent=authMode==='login'?'Create new account':'Already have an account? Login';document.getElementById('authMessage').textContent='';}
+async function submitAuth(){
+ const email=document.getElementById('authEmail').value.trim(),password=document.getElementById('authPassword').value;
+ const msg=document.getElementById('authMessage'); if(!email||!password){msg.textContent='ইমেইল ও পাসওয়ার্ড দিন।';return}
+ if(password.length<6){msg.textContent='পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।';return}
+ const btn=document.getElementById('authSubmit');btn.disabled=true;msg.textContent='অপেক্ষা করুন...';
+ try{
+  let result;
+  if(authMode==='signup') result=await sb.auth.signUp({email,password,options:{emailRedirectTo:location.origin}});
+  else result=await sb.auth.signInWithPassword({email,password});
+  if(result.error) throw result.error;
+  if(authMode==='signup'&&!result.data.session){msg.textContent='অ্যাকাউন্ট তৈরি হয়েছে। ইমেইলে পাঠানো লিংক দিয়ে Email Confirm করুন, তারপর Login করুন।';}
+  else {msg.textContent='সফলভাবে লগইন হয়েছে।';closeLogin();await refreshSession();}
+ }catch(e){msg.textContent=e.message||'সমস্যা হয়েছে। আবার চেষ্টা করুন।';}
+ finally{btn.disabled=false;}
+}
+async function refreshSession(){
+ const {data}=await sb.auth.getSession();currentUser=data.session?.user||null;
+ const headerBtn=document.querySelector('header>button');
+ if(headerBtn){headerBtn.textContent=currentUser?'Logout':'👤 Login';headerBtn.onclick=currentUser?signOut:openLogin;}
+ document.getElementById('upload').style.display=currentUser?'block':'none';
+ if(currentUser){document.getElementById('status').textContent='Signed in: '+currentUser.email;await loadMyFiles();}
+ else {document.getElementById('status').textContent='ফাইল আপলোড ও দেখতে Login করুন।';clearGalleries();}
+}
+async function signOut(){await sb.auth.signOut();await refreshSession();}
+function clearGalleries(){['photos','videosList','documentsList'].forEach(id=>document.getElementById(id).innerHTML='<p class="empty">Login করলে আপনার ফাইল এখানে দেখা যাবে।</p>');}
+function addCard(id,card){const area=document.getElementById(id);if(area.querySelector('.empty'))area.innerHTML='';area.appendChild(card);}
+function targetFor(type){return type&&type.startsWith('image/')?'photos':type&&type.startsWith('video/')?'videosList':'documentsList';}
+async function loadMyFiles(){
+ clearGalleries();const {data:rows,error}=await sb.from('media_items').select('*').order('created_at',{ascending:false});
+ if(error){document.getElementById('status').textContent='ফাইল লোড হয়নি: '+error.message;return}
+ if(!rows?.length){clearGalleries();return}
+ for(const item of rows){
+  const {data:blob,error:downloadError}=await sb.storage.from('angel-memories').download(item.object_path);
+  if(downloadError)continue;
+  const url=URL.createObjectURL(blob),card=document.createElement('div');card.className='card';
+  if(item.content_type?.startsWith('image/')){const img=document.createElement('img');img.src=url;img.alt=item.file_name;card.appendChild(img)}
+  else if(item.content_type?.startsWith('video/')){const video=document.createElement('video');video.src=url;video.controls=true;card.appendChild(video)}
+  else{const label=document.createElement('p');label.textContent='📄 '+item.file_name;card.appendChild(label)}
+  const name=document.createElement('p');name.textContent=item.file_name;card.appendChild(name);
+  const dl=document.createElement('button');dl.textContent='⬇ Download';dl.style.margin='8px';dl.onclick=()=>{const a=document.createElement('a');a.href=url;a.download=item.file_name;a.click()};card.appendChild(dl);
+  addCard(targetFor(item.content_type),card);
+ }
+}
+async function uploadFiles(){
+ if(!currentUser){openLogin();return}
+ const files=Array.from(document.getElementById('fileInput').files),status=document.getElementById('status');
  if(!files.length){status.textContent='প্রথমে ফাইল নির্বাচন করুন।';return}
- files.forEach(file=>{
-  const url=URL.createObjectURL(file),card=document.createElement('div');card.className='card';
-  const title=document.createElement('p');title.textContent=file.name;
-  if(file.type.startsWith('image/')){const img=document.createElement('img');img.src=url;img.alt=file.name;card.appendChild(img);addCard('photos',card)}
-  else if(file.type.startsWith('video/')){const video=document.createElement('video');video.src=url;video.controls=true;card.appendChild(video);addCard('videosList',card)}
-  else{const link=document.createElement('a');link.href=url;link.download=file.name;link.textContent='📄 '+file.name;link.style.color='#ffd45c';link.style.display='block';link.style.padding='20px';card.appendChild(link);addCard('documentsList',card)}
-  card.appendChild(title)
- });
- status.textContent='এই ব্রাউজার সেশনে ফাইল যোগ হয়েছে ❤️';document.getElementById('fileInput').value=''
+ status.textContent='আপলোড হচ্ছে...';
+ for(const file of files){
+  if(file.size>50*1024*1024){status.textContent=file.name+' ৫০ MB-এর বেশি, বাদ দেওয়া হয়েছে।';continue}
+  const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+  const path=currentUser.id+'/'+crypto.randomUUID()+'-'+safeName;
+  const {error:uploadError}=await sb.storage.from('angel-memories').upload(path,file,{contentType:file.type||'application/octet-stream',upsert:false});
+  if(uploadError){status.textContent='Upload error: '+uploadError.message;continue}
+  const {error:rowError}=await sb.from('media_items').insert({user_id:currentUser.id,object_path:path,file_name:file.name,content_type:file.type||'application/octet-stream',size_bytes:file.size});
+  if(rowError){status.textContent='ফাইল আপলোড হয়েছে, কিন্তু তালিকায় যোগ হয়নি: '+rowError.message;continue}
+ }
+ document.getElementById('fileInput').value='';status.textContent='আপলোড সম্পন্ন ❤️';await loadMyFiles();
 }
 function filterGallery(){const query=document.getElementById('search').value.toLowerCase();document.querySelectorAll('#photos .card').forEach(card=>{card.style.display=card.textContent.toLowerCase().includes(query)?'block':'none'})}
+sb.auth.onAuthStateChange(()=>{setTimeout(()=>refreshSession(),0)});
+refreshSession();
 </script>
 </body>
 </html>
