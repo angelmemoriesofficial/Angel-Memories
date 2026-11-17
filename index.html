@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#061535">
+<title>Angel Memories | Private Cloud Gallery</title>
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+:root{--navy:#061535;--gold:#ffd45c;--white:#fff}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--navy);color:white;font-family:Arial,sans-serif}
+header{position:sticky;top:0;z-index:10;background:#061535f5;border-bottom:2px solid var(--gold);padding:10px 4%;display:flex;align-items:center;justify-content:space-between;gap:15px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand img{width:65px;height:55px;object-fit:contain}
+.brand strong{color:var(--gold);font-size:20px}
+.brand small{display:block;color:white;font-size:11px}
+nav{display:flex;gap:16px;flex-wrap:wrap}
+nav a{color:white;text-decoration:none;font-size:14px}
+nav a:hover{color:var(--gold)}
+button{background:linear-gradient(120deg,#ffe58a,#e9a900);color:#101020;border:1px solid white;border-radius:25px;padding:12px 22px;font-weight:bold;cursor:pointer}
+.hero{width:100%;min-height:620px;background-image:linear-gradient(#00103335,#00103335),url('hero.png');background-position:center;background-size:cover;background-repeat:no-repeat;display:flex;align-items:center;justify-content:center;text-align:center;padding:45px 15px}
+.hero-content{max-width:850px;text-shadow:0 2px 10px #000}
+.hero-logo{width:180px;height:145px;object-fit:contain;filter:drop-shadow(0 0 12px #ffd45c)}
+.hero h1{font-family:Georgia,serif;font-size:clamp(38px,7vw,76px);color:#ffd45c;margin:8px 0;text-shadow:0 3px 15px #000}
+.hero h2{font-size:clamp(20px,4vw,32px);color:white;margin:8px}
+.hero p{font-size:18px;line-height:1.8}
+.actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;padding:22px 12px;background:#061535}
+section{padding:35px 5%;scroll-margin-top:90px}
+h2.section-title{text-align:center;color:var(--gold)}
+.subtitle{text-align:center;color:#d4d9eb}
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;margin-top:25px}
+.feature{text-align:center;padding:23px 8px;background:#10254c;border:1px solid #d5a933;border-radius:15px;color:white}
+.feature span{font-size:30px;display:block;margin-bottom:10px}
+.panel{max-width:850px;margin:20px auto;padding:25px;background:#10254c;border:1px solid #d6ac48;border-radius:18px;text-align:center}
+input{padding:12px;border-radius:8px;border:1px solid #d5ac48;margin:8px;max-width:100%}
+.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:15px;margin-top:25px}
+.card{background:#10254c;border:1px solid #d5ac48;border-radius:12px;overflow:hidden}
+.card img,.card video{width:100%;height:180px;object-fit:cover}
+.card p{padding:8px;overflow-wrap:anywhere}
+.empty{text-align:center;color:#d8d8e5;padding:25px}
+.about{text-align:center;line-height:1.9;color:#e0e4f2}
+footer{text-align:center;background:#020b20;border-top:2px solid var(--gold);padding:25px}
+footer img{width:100px;height:80px;object-fit:contain}
+footer p{color:#ddd}
+.modal{display:none;position:fixed;inset:0;background:#000b;z-index:20;justify-content:center;align-items:center;padding:15px}
+.modalbox{background:#0d2145;border:2px solid var(--gold);border-radius:18px;padding:25px;width:100%;max-width:380px;text-align:center}
+.modalbox img{width:100px;height:75px;object-fit:contain}
+.close{float:right;background:#333;color:white}
+@media(max-width:650px){header{flex-direction:column}nav{justify-content:center;gap:12px}.brand img{width:55px}.brand strong{font-size:18px}.hero{min-height:520px;background-position:center}section{padding:28px 15px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand"><img src="logo.png" alt="Angel Memories Logo"><div><strong>Angel Memories</strong><small>Private Cloud Gallery</small></div></div>
+ <nav><a href="#home">Home</a><a href="#gallery">Gallery</a><a href="#videos">Videos</a><a href="#documents">Documents</a><a href="#about">About</a><a href="#contact">Contact</a></nav>
+ <button onclick="openLogin()">👤 Login</button>
+</header>
+<main>
+<section class="hero" id="home">
+ <div class="hero-content">
+  <img class="hero-logo" src="logo.png" alt="Angel Memories Logo">
+  <h1>Angel Memories</h1>
+  <h2>Your Memories • Our Care</h2>
+  <p>আপনার বিশেষ মুহূর্তগুলো যত্নে রাখুন চিরকাল...</p>
+  <button onclick="document.getElementById('upload').scrollIntoView()">☁ Upload Your Memories</button>
+ </div>
+</section>
+<div class="actions"><button onclick="document.getElementById('upload').scrollIntoView()">☁ Upload Your Files</button><button onclick="document.getElementById('search').focus()">🔍 Search Memories</button></div>
+<section><h2 class="section-title">✨ Your Memories, Our Care ✨</h2><p class="subtitle">আপনার বিশেষ মুহূর্তগুলো যত্নে রাখুন চিরকাল...</p>
+ <div class="features"><div class="feature"><span>📸</span>Photo Gallery</div><div class="feature"><span>🎬</span>Video Gallery</div><div class="feature"><span>📁</span>Documents</div><div class="feature"><span>🛡️</span>Secure & Private</div><div class="feature"><span>☁️</span>Cloud Storage</div><div class="feature"><span>⚡</span>Fast Access</div><div class="feature"><span>👨‍👩‍👧</span>Share Together</div></div>
+</section>
+<section id="upload"><h2 class="section-title">☁ Upload Your Memories</h2><div class="panel"><p>ছবি, ভিডিও অথবা ডকুমেন্ট নির্বাচন করুন</p><input type="file" id="fileInput" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt"><br><button onclick="uploadFiles()">Upload Files</button><p id="status"></p></div></section>
+<section id="gallery"><h2 class="section-title">📸 Photo Gallery</h2><input id="search" type="search" placeholder="Search your memories..." oninput="filterGallery()"><div class="gallery" id="photos"><p class="empty">আপনার ছবিগুলো এখানে দেখা যাবে।</p></div></section>
+<section id="videos"><h2 class="section-title">🎬 Video Gallery</h2><div class="gallery" id="videosList"><p class="empty">আপনার ভিডিওগুলো এখানে দেখা যাবে।</p></div></section>
+<section id="documents"><h2 class="section-title">📁 Documents</h2><div class="gallery" id="documentsList"><p class="empty">আপনার ডকুমেন্ট এখানে দেখা যাবে।</p></div></section>
+<section id="about"><h2 class="section-title">💙 About Angel Memories</h2><div class="panel about"><img src="logo.png" width="110" alt="Angel Memories Logo"><p>Welcome to Angel Memories.</p><p>একটি সুন্দর ডিজিটাল জায়গা, যেখানে আপনার প্রিয় ছবি, ভিডিও ও গুরুত্বপূর্ণ ডকুমেন্ট সাজিয়ে রাখতে পারবেন।</p><h3 style="color:#ffd45c">Your Story, Your Memories</h3></div></section>
+<section id="contact"><h2 class="section-title">📩 Contact Us</h2><div class="panel"><img src="logo.png" width="90" alt="Angel Memories Logo"><p>Angel Memories Support</p><p>আপনার মতামত ও সহযোগিতার জন্য আমাদের সঙ্গে যোগাযোগ করুন।</p></div></section>
+</main>
+<footer><img src="logo.png" alt="Angel Memories Logo"><h3 style="color:#ffd45c">Angel Memories</h3><p>Your Story, Your Memories</p><p>© 2026 Angel Memories. All Rights Reserved.</p></footer>
+<div class="modal" id="loginModal"><div class="modalbox"><button class="close" onclick="closeLogin()">✕</button><img src="logo.png" alt="Angel Memories Logo"><h2>Angel Memories</h2><p>Welcome Back!</p><p style="font-size:12px;color:#ddd">Secure Login চালু করতে Supabase Auth যুক্ত করতে হবে।</p><button onclick="closeLogin()">Close</button></div></div>
+<script>
+function openLogin(){document.getElementById('loginModal').style.display='flex'}
+function closeLogin(){document.getElementById('loginModal').style.display='none'}
+function addCard(id,card){const area=document.getElementById(id);if(area.querySelector('.empty'))area.innerHTML='';area.prepend(card)}
+function uploadFiles(){
+ const files=Array.from(document.getElementById('fileInput').files);
+ const status=document.getElementById('status');
+ if(!files.length){status.textContent='প্রথমে ফাইল নির্বাচন করুন।';return}
+ files.forEach(file=>{
+  const url=URL.createObjectURL(file),card=document.createElement('div');card.className='card';
+  const title=document.createElement('p');title.textContent=file.name;
+  if(file.type.startsWith('image/')){const img=document.createElement('img');img.src=url;img.alt=file.name;card.appendChild(img);addCard('photos',card)}
+  else if(file.type.startsWith('video/')){const video=document.createElement('video');video.src=url;video.controls=true;card.appendChild(video);addCard('videosList',card)}
+  else{const link=document.createElement('a');link.href=url;link.download=file.name;link.textContent='📄 '+file.name;link.style.color='#ffd45c';link.style.display='block';link.style.padding='20px';card.appendChild(link);addCard('documentsList',card)}
+  card.appendChild(title)
+ });
+ status.textContent='এই ব্রাউজার সেশনে ফাইল যোগ হয়েছে ❤️';document.getElementById('fileInput').value=''
+}
+function filterGallery(){const query=document.getElementById('search').value.toLowerCase();document.querySelectorAll('#photos .card').forEach(card=>{card.style.display=card.textContent.toLowerCase().includes(query)?'block':'none'})}
+</script>
+</body>
+</html>
