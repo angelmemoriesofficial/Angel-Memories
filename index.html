@@ -20,7 +20,11 @@ nav{display:flex;gap:13px;flex-wrap:wrap;align-items:center;justify-content:cent
 nav a{color:white;text-decoration:none;font-size:14px;padding:8px 5px;border-bottom:2px solid transparent}
 nav a:hover,nav a.active{color:var(--gold);border-bottom-color:var(--gold)}
 .header-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:center}
-.header-actions button{padding:9px 13px;font-size:12px}.header-actions button:disabled{opacity:.45;cursor:not-allowed}#profileBtn{display:inline-flex;align-items:center;gap:7px}.profile-btn-photo{width:25px;height:25px;border-radius:50%;object-fit:cover;border:1.5px solid #ffd45c;background:#10254c;vertical-align:middle}
+.header-actions button{padding:9px 13px;font-size:12px}.header-actions button:disabled{opacity:.45;cursor:not-allowed}
+/* Keep the Back button at the upper-left corner of the site header. */
+header{position:sticky;top:0;}
+.header-actions #backBtn{position:absolute;left:4%;top:10px;z-index:12;padding:9px 13px;}
+.brand{margin-left:90px;}#profileBtn{display:inline-flex;align-items:center;gap:7px}.profile-btn-photo{width:25px;height:25px;border-radius:50%;object-fit:cover;border:1.5px solid #ffd45c;background:#10254c;vertical-align:middle}
 .page-section{display:none!important}.page-section.active-page{display:block!important}
 .page-section.hero.active-page{display:flex!important}
 .profile-line{padding:12px;border-bottom:1px solid #52617d;text-align:left;overflow-wrap:anywhere}
