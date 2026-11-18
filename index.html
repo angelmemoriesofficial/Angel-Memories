@@ -534,7 +534,7 @@ async function searchMemories(){
  if(query.length<1){status.textContent='খুঁজতে উপরের বক্সে নাম লিখুন।';return;}
  status.textContent='স্মৃতি খোঁজা হচ্ছে...';
  try{
-  const {data:rows,error}=await sb.from('media_items').select('id,user_id,object_path,file_name,content_type,created_at').eq('user_id',currentUser.id).ilike('file_name','%'+query.replace(/[\\%_]/g,'\\\\function filterGallery(){const query=document.getElementById('search').value.toLowerCase();document.querySelectorAll('#photos .card').forEach(card=>{card.style.display=card.textContent.toLowerCase().includes(query)?'block':'none'})}')+'%').order('created_at',{ascending:false}).limit(50);
+  const {data:rows,error}=await sb.from('media_items').select('id,user_id,object_path,file_name,content_type,created_at').eq('user_id',currentUser.id).ilike('file_name','%'+query.replace(/[\\%_]/g,'\\query.replace(/[\\%_]/g,'\\\\function filterGallery(){const query=document.getElementById('search').value.toLowerCase();document.querySelectorAll('#photos .card').forEach(card=>{card.style.display=card.textContent.toLowerCase().includes(query)?'block':'none'})}')')+'%').order('created_at',{ascending:false}).limit(50);
   if(token!==memorySearchToken)return;
   if(error)throw error;
   if(!rows?.length){status.textContent='কোনো স্মৃতি পাওয়া যায়নি। অন্য নাম দিয়ে চেষ্টা করুন।';return;}
