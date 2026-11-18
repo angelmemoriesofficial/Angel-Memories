@@ -44,6 +44,13 @@ input{padding:12px;border-radius:8px;border:1px solid #d5ac48;margin:8px;max-wid
 .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:15px;margin-top:25px}
 .card{background:#10254c;border:1px solid #d5ac48;border-radius:12px;overflow:hidden}
 .card img,.card video{width:100%;height:180px;object-fit:cover}
+.card img{cursor:zoom-in}
+.photo-view{display:none;position:fixed;inset:0;z-index:50;background:#000e;align-items:center;justify-content:center;flex-direction:column;padding:16px;gap:12px}
+.photo-view.open{display:flex}
+.photo-view img{max-width:94vw;max-height:76vh;object-fit:contain;border:2px solid #ffd45c;border-radius:10px;transition:transform .2s}
+.photo-view .photo-actions{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}
+.photo-view .photo-title{color:#fff;text-align:center;overflow-wrap:anywhere;max-width:90vw}
+
 .card p{padding:8px;overflow-wrap:anywhere}
 .empty{text-align:center;color:#d8d8e5;padding:25px}
 .admin-tools{max-width:1100px;margin:20px auto;padding:20px;background:#10254c;border:1px solid #d5ac48;border-radius:16px}.admin-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px;border-bottom:1px solid #52617d}.admin-row small{display:block;color:#d4d9eb;overflow-wrap:anywhere}.danger{background:#9f2634;color:white;border-color:#ffb5b5}
@@ -112,6 +119,7 @@ footer p{color:#ddd}
 <section class="page-section" data-page="contact" id="contact"><h2 class="section-title">📩 Contact Us</h2><div class="panel"><img src="logo.png" width="90" alt="Angel Memories Logo"><p>Angel Memories Support</p><p>আপনার মতামত ও সহযোগিতার জন্য আমাদের সঙ্গে যোগাযোগ করুন।</p></div></section>
 </main>
 <footer><img src="logo.png" alt="Angel Memories Logo"><h3 style="color:#ffd45c">Angel Memories</h3><p>Your Story, Your Memories</p><p>© 2026 Angel Memories. All Rights Reserved.</p></footer>
+<div class="photo-view" id="photoView" role="dialog" aria-modal="true" aria-label="ছবির বড় ভিউ" onclick="if(event.target===this)closePhotoView()"><p class="photo-title" id="photoViewTitle"></p><img id="photoViewImage" alt="Full size memory"><div class="photo-actions"><button type="button" onclick="zoomPhoto(1.2)">＋ Zoom</button><button type="button" onclick="zoomPhoto(.833333)">－ Zoom</button><button type="button" onclick="resetPhotoZoom()">Reset</button><button type="button" id="photoDeleteBtn" class="danger" style="display:none" onclick="deletePhotoFromView()">🗑 Delete</button><button type="button" onclick="closePhotoView()">✕ Close</button></div></div>
 <div class="modal" id="loginModal"><div class="modalbox"><button class="close" onclick="closeLogin()">✕</button><img src="logo.png" alt="Angel Memories Logo"><h2>Angel Memories</h2><p id="authHeading">Login to your account</p><input id="authEmail" type="email" placeholder="Email address" autocomplete="email"><br><input id="authPassword" type="password" placeholder="Password (minimum 6 characters)" autocomplete="current-password"><br><button id="authSubmit" onclick="submitAuth()">Login</button><p><button style="background:#263c63;color:white" onclick="toggleAuthMode()" id="authToggle">Create new account</button></p><p id="authMessage" style="font-size:13px;color:#ffe58a"></p></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -123,6 +131,7 @@ let currentUser=null;
 let currentRole='user';
 let currentPage='home';
 let pageHistory=[];
+let activePhotoItem=null,photoZoom=1;
 function openLogin(){document.getElementById('loginModal').style.display='flex';}
 function showPage(page,fromBack=false){if(page==='adminDashboard'&&currentRole!=='admin'){page='home';}if(!fromBack&&page!==currentPage){pageHistory.push(currentPage);}currentPage=page;document.querySelectorAll('.page-section').forEach(el=>el.classList.toggle('active-page',el.dataset.page===page));document.querySelectorAll('#mainNav a').forEach(a=>a.classList.toggle('active',a.dataset.page===page));if(location.hash!=='#'+page)history.replaceState(null,'','#'+page);const back=document.getElementById('backBtn');if(back)back.disabled=pageHistory.length===0;window.scrollTo({top:0,behavior:'smooth'});if(page==='adminDashboard'&&currentUser&&currentRole==='admin')loadAdminFiles();if(page==='profile')loadProfile();if(page==='settings')loadSettings();}
 function goBack(){if(pageHistory.length){const previous=pageHistory.pop();showPage(previous,true);}else{showPage('home',true);}}
@@ -179,12 +188,13 @@ async function loadMyFiles(){
   const {data:blob,error:downloadError}=await sb.storage.from('angel-memories').download(item.object_path);
   if(downloadError)continue;
   const url=URL.createObjectURL(blob),card=document.createElement('div');card.className='card';
-  if(item.content_type?.startsWith('image/')){const img=document.createElement('img');img.src=url;img.alt=item.file_name;card.appendChild(img)}
+  if(item.content_type?.startsWith('image/')){const img=document.createElement('img');img.src=url;img.alt=item.file_name;img.onclick=()=>openPhotoView(url,item);card.appendChild(img)}
   else if(item.content_type?.startsWith('video/')){const video=document.createElement('video');video.src=url;video.controls=true;card.appendChild(video)}
   else{const label=document.createElement('p');label.textContent='📄 '+item.file_name;card.appendChild(label)}
   const name=document.createElement('p');name.textContent=item.file_name;card.appendChild(name);
   const dl=document.createElement('button');dl.textContent='⬇ Download';dl.style.margin='8px';dl.onclick=()=>{const a=document.createElement('a');a.href=url;a.download=item.file_name;a.click()};card.appendChild(dl);
   const share=document.createElement('button');share.textContent='🔗 Share';share.style.margin='8px';share.onclick=()=>createShareLink(item,share);card.appendChild(share);
+   if(currentRole==='admin'){const del=document.createElement('button');del.textContent='🗑 Delete';del.className='danger';del.style.margin='8px';del.onclick=()=>deleteMediaItem(item,del);card.appendChild(del);}
   addCard(targetFor(item.content_type),card);
  }
 }
@@ -217,6 +227,21 @@ async function loadAdminFiles(){
   };
   actions.append(download,del);row.appendChild(actions);host.appendChild(row);
  }
+}
+function openPhotoView(url,item){activePhotoItem=item;photoZoom=1;const modal=document.getElementById('photoView'),img=document.getElementById('photoViewImage');img.src=url;img.style.transform='scale(1)';document.getElementById('photoViewTitle').textContent=item.file_name;document.getElementById('photoDeleteBtn').style.display=currentRole==='admin'?'inline-block':'none';modal.classList.add('open');}
+function zoomPhoto(factor){photoZoom=Math.max(.5,Math.min(4,photoZoom*factor));document.getElementById('photoViewImage').style.transform='scale('+photoZoom+')';}
+function resetPhotoZoom(){photoZoom=1;document.getElementById('photoViewImage').style.transform='scale(1)';}
+function closePhotoView(){document.getElementById('photoView').classList.remove('open');document.getElementById('photoViewImage').src='';activePhotoItem=null;}
+async function deletePhotoFromView(){if(currentRole!=='admin'||!activePhotoItem)return;const item=activePhotoItem;const button=document.getElementById('photoDeleteBtn');button.disabled=true;const ok=await deleteMediaItem(item,button);button.disabled=false;if(ok)closePhotoView();}
+async function deleteMediaItem(item,button){
+ if(currentRole!=='admin'){alert('শুধু Admin ফাইল ডিলিট করতে পারবেন।');return false;}
+ if(!confirm('এই ছবি/ফাইলটি স্থায়ীভাবে ডিলিট করবেন?'))return false;
+ button.disabled=true;
+ const removed=await sb.storage.from('angel-memories').remove([item.object_path]);
+ if(removed.error){alert('Storage থেকে ডিলিট হয়নি: '+removed.error.message);button.disabled=false;return false;}
+ const deleted=await sb.from('media_items').delete().eq('id',item.id);
+ if(deleted.error){alert('ফাইলের তথ্য ডিলিট হয়নি: '+deleted.error.message);button.disabled=false;return false;}
+ await loadMyFiles();if(currentRole==='admin')await loadAdminFiles();return true;
 }
 async function createShareLink(item,button){
  if(!currentUser){openLogin();return}
