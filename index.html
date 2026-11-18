@@ -38,7 +38,7 @@ h2.section-title{text-align:center;color:var(--gold)}
 .subtitle{text-align:center;color:#d4d9eb}
 .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;margin-top:25px}
 .feature{text-align:center;padding:23px 8px;background:#10254c;border:1px solid #d5a933;border-radius:15px;color:white}
-.feature span{font-size:30px;display:block;margin-bottom:10px}
+.feature span{font-size:30px;display:block;margin-bottom:10px}.feature{cursor:pointer;transition:transform .18s ease,box-shadow .18s ease}.feature:hover,.feature:focus-visible{transform:translateY(-3px);box-shadow:0 7px 18px #0006;outline:2px solid #ffd45c;outline-offset:2px}
 .panel{max-width:850px;margin:20px auto;padding:25px;background:#10254c;border:1px solid #d6ac48;border-radius:18px;text-align:center}
 input{padding:12px;border-radius:8px;border:1px solid #d5ac48;margin:8px;max-width:100%}
 .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:15px;margin-top:25px}
@@ -79,7 +79,15 @@ footer p{color:#ddd}
 
 <div class="actions page-section active-page" data-page="home"><button onclick="goToUpload()">☁ Upload Your Files</button><button onclick="showPage('gallery');setTimeout(()=>document.getElementById('search').focus(),80)">🔍 Search Memories</button></div>
 <section class="page-section active-page" data-page="home"><h2 class="section-title">✨ Your Memories, Our Care ✨</h2><p class="subtitle">আপনার বিশেষ মুহূর্তগুলো যত্নে রাখুন চিরকাল...</p>
- <div class="features"><div class="feature"><span>📸</span>Photo Gallery</div><div class="feature"><span>🎬</span>Video Gallery</div><div class="feature"><span>📁</span>Documents</div><div class="feature"><span>🛡️</span>Secure & Private</div><div class="feature"><span>☁️</span>Cloud Storage</div><div class="feature"><span>⚡</span>Fast Access</div><div class="feature"><span>👨‍👩‍👧</span>Share Together</div></div>
+ <div class="features">
+<div class="feature" role="button" tabindex="0" onclick="showPage('gallery')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showPage('gallery')}"><span>📸</span>Photo Gallery</div>
+<div class="feature" role="button" tabindex="0" onclick="showPage('videos')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showPage('videos')}"><span>🎬</span>Video Gallery</div>
+<div class="feature" role="button" tabindex="0" onclick="showPage('documents')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showPage('documents')}"><span>📁</span>Documents</div>
+<div class="feature" role="button" tabindex="0" onclick="showPage('settings')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showPage('settings')}"><span>🛡️</span>Secure & Private</div>
+<div class="feature" role="button" tabindex="0" onclick="showPage('settings')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showPage('settings')}"><span>☁️</span>Cloud Storage</div>
+<div class="feature" role="button" tabindex="0" onclick="openFastAccess()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openFastAccess()}"><span>⚡</span>Fast Access</div>
+<div class="feature" role="button" tabindex="0" onclick="openHomeShare()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openHomeShare()}"><span>👨‍👩‍👧</span>Share Together</div>
+</div>
 </section>
 <section class="home-share page-section active-page" data-page="home" aria-label="Share Angel Memories"><h2>💙 Share Angel Memories</h2><p>আপনার পরিবার ও বন্ধুদের সঙ্গে Angel Memories পরিচয় করিয়ে দিন।</p><div class="home-share-buttons"><button type="button" onclick="shareWebsite()">🔗 Link Share</button><button type="button" onclick="shareSocial('facebook')">ⓕ Facebook</button><button type="button" onclick="shareSocial('whatsapp')">🟢 WhatsApp</button><button type="button" onclick="shareSocial('imo')">💬 imo</button><button type="button" onclick="shareSocial('messenger')">🔵 Messenger</button><button type="button" onclick="shareSocial('telegram')">✈️ Telegram</button><button type="button" onclick="shareSocial('x')">𝕏 Share</button></div><p id="homeShareMessage" role="status" aria-live="polite"></p></section>
 <section class="page-section" data-page="upload" id="upload" style="display:none"><h2 class="section-title">☁ Upload Your Memories</h2><div class="panel"><p>ছবি, ভিডিও অথবা ডকুমেন্ট নির্বাচন করুন</p><input type="file" id="fileInput" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt"><br><button onclick="uploadFiles()">Upload Files</button><p id="status"></p></div></section>
@@ -116,6 +124,8 @@ let currentUser=null;
 let currentRole='user';
 function openLogin(){document.getElementById('loginModal').style.display='flex';}
 function showPage(page){if(page==='adminDashboard'&&currentRole!=='admin'){page='home';}document.querySelectorAll('.page-section').forEach(el=>el.classList.toggle('active-page',el.dataset.page===page));document.querySelectorAll('#mainNav a').forEach(a=>a.classList.toggle('active',a.dataset.page===page));if(location.hash!=='#'+page)history.replaceState(null,'','#'+page);window.scrollTo({top:0,behavior:'smooth'});if(page==='adminDashboard'&&currentUser&&currentRole==='admin')loadAdminFiles();if(page==='profile')loadProfile();if(page==='settings')loadSettings();}
+function openFastAccess(){showPage('gallery');setTimeout(()=>{const field=document.getElementById('search');if(field)field.focus();},120);}
+function openHomeShare(){showPage('home');setTimeout(()=>{const panel=document.querySelector('.home-share');if(panel)panel.scrollIntoView({behavior:'smooth',block:'center'});},120);}
 function openProfile(){showPage('profile');}
 function goToUpload(){if(!currentUser){openLogin();return;}showPage('upload');}
 function applyTheme(theme){document.body.dataset.theme=theme==='light'?'light':'dark';const dark=document.getElementById('darkThemeBtn'),light=document.getElementById('lightThemeBtn');if(dark)dark.style.outline=theme==='dark'?'2px solid #fff':'none';if(light)light.style.outline=theme==='light'?'2px solid #fff':'none';}
