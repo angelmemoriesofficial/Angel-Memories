@@ -133,8 +133,11 @@ let currentPage='home';
 let pageHistory=[];
 let activePhotoItem=null,photoZoom=1,galleryLoadToken=0;
 function openLogin(){document.getElementById('loginModal').style.display='flex';}
-function showPage(page,fromBack=false){if(page==='adminDashboard'&&currentRole!=='admin'){page='home';}if(!fromBack&&page!==currentPage){pageHistory.push(currentPage);}currentPage=page;document.querySelectorAll('.page-section').forEach(el=>el.classList.toggle('active-page',el.dataset.page===page));document.querySelectorAll('#mainNav a').forEach(a=>a.classList.toggle('active',a.dataset.page===page));if(location.hash!=='#'+page)history.replaceState(null,'','#'+page);const back=document.getElementById('backBtn');if(back)back.disabled=pageHistory.length===0;window.scrollTo({top:0,behavior:'smooth'});if(page==='adminDashboard'&&currentUser&&currentRole==='admin')loadAdminFiles();if(page==='profile')loadProfile();if(page==='settings')loadSettings();}
-function goBack(){if(pageHistory.length){const previous=pageHistory.pop();showPage(previous,true);}else{showPage('home',true);}}
+function renderPage(page){if(page==='adminDashboard'&&currentRole!=='admin')page='home';currentPage=page;document.querySelectorAll('.page-section').forEach(el=>el.classList.toggle('active-page',el.dataset.page===page));document.querySelectorAll('#mainNav a').forEach(a=>a.classList.toggle('active',a.dataset.page===page));const back=document.getElementById('backBtn');if(back)back.disabled=pageHistory.length===0;window.scrollTo({top:0,behavior:'smooth'});if(page==='adminDashboard'&&currentUser&&currentRole==='admin')loadAdminFiles();if(page==='profile')loadProfile();if(page==='settings')loadSettings();}
+function showPage(page,fromBack=false){if(page==='adminDashboard'&&currentRole!=='admin')page='home';if(page===currentPage)return;if(!fromBack){pageHistory.push(currentPage);history.pushState({angelMemories:true,page},'','#'+page);}renderPage(page);}
+function goBack(){if(history.state?.angelMemories){history.back();return;}if(pageHistory.length){const previous=pageHistory.pop();renderPage(previous);}else if(currentPage!=='home'){renderPage('home');}else if(document.getElementById('photoView')?.classList.contains('open'))closePhotoView();}
+function closePhotoViewFromPop(){const modal=document.getElementById('photoView');if(modal?.classList.contains('open')){modal.classList.remove('open');document.getElementById('photoViewImage').src='';activePhotoItem=null;}}
+window.addEventListener('popstate',event=>{if(history.state?.angelMemoriesOverlay==='photo'){closePhotoViewFromPop();return;}if(document.getElementById('photoView')?.classList.contains('open'))closePhotoViewFromPop();if(document.getElementById('loginModal')?.style.display==='flex'){document.getElementById('loginModal').style.display='none';return;}const next=event.state?.page||location.hash.replace('#','')||'home';if(next!==currentPage){if(pageHistory.length)pageHistory.pop();renderPage(next);}else if(currentPage!=='home'&&!event.state?.angelMemories){renderPage(next);}});
 function openFastAccess(){showPage('gallery');setTimeout(()=>{const field=document.getElementById('search');if(field)field.focus();},120);}
 function openHomeShare(){showPage('home');setTimeout(()=>{const panel=document.querySelector('.home-share');if(panel)panel.scrollIntoView({behavior:'smooth',block:'center'});},120);}
 function openProfile(){showPage('profile');}
@@ -237,10 +240,10 @@ async function loadAdminFiles(){
   actions.append(download,del);row.appendChild(actions);host.appendChild(row);
  }
 }
-function openPhotoView(url,item){activePhotoItem=item;photoZoom=1;const modal=document.getElementById('photoView'),img=document.getElementById('photoViewImage');img.src=url;img.style.transform='scale(1)';document.getElementById('photoViewTitle').textContent=item.file_name;document.getElementById('photoDeleteBtn').style.display=currentRole==='admin'?'inline-block':'none';modal.classList.add('open');}
+function openPhotoView(url,item){activePhotoItem=item;photoZoom=1;const modal=document.getElementById('photoView'),img=document.getElementById('photoViewImage');img.src=url;img.style.transform='scale(1)';document.getElementById('photoViewTitle').textContent=item.file_name;document.getElementById('photoDeleteBtn').style.display=currentRole==='admin'?'inline-block':'none';modal.classList.add('open');history.pushState({angelMemories:true,angelMemoriesOverlay:'photo',page:currentPage},'');}
 function zoomPhoto(factor){photoZoom=Math.max(.5,Math.min(4,photoZoom*factor));document.getElementById('photoViewImage').style.transform='scale('+photoZoom+')';}
 function resetPhotoZoom(){photoZoom=1;document.getElementById('photoViewImage').style.transform='scale(1)';}
-function closePhotoView(){document.getElementById('photoView').classList.remove('open');document.getElementById('photoViewImage').src='';activePhotoItem=null;}
+function closePhotoView(){if(history.state?.angelMemoriesOverlay==='photo'){history.back();return;}closePhotoViewFromPop();}
 async function deletePhotoFromView(){if(currentRole!=='admin'||!activePhotoItem)return;const item=activePhotoItem;const button=document.getElementById('photoDeleteBtn');button.disabled=true;const ok=await deleteMediaItem(item,button);button.disabled=false;if(ok)closePhotoView();}
 async function deleteMediaItem(item,button){
  if(currentRole!=='admin'){alert('শুধু Admin ফাইল ডিলিট করতে পারবেন।');return false;}
@@ -311,7 +314,7 @@ async function uploadFiles(){
 }
 function filterGallery(){const query=document.getElementById('search').value.toLowerCase();document.querySelectorAll('#photos .card').forEach(card=>{card.style.display=card.textContent.toLowerCase().includes(query)?'block':'none'})}
 sb.auth.onAuthStateChange(()=>{setTimeout(()=>refreshSession(),0)});
-const initialPage=location.hash.replace('#','');showPage(initialPage||'home');
+const initialPage=location.hash.replace('#','');renderPage(initialPage||'home');if(!history.state?.angelMemories){history.replaceState({angelMemories:true,base:true,page:currentPage},'','#'+currentPage);}
 refreshSession();
 openSharedFile();
 if(new URLSearchParams(location.search).has('share')){document.querySelectorAll('.page-section').forEach(el=>el.classList.remove('active-page'));document.getElementById('sharedFile').classList.add('active-page');}
