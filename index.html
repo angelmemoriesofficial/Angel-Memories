@@ -386,7 +386,7 @@ async function refreshSession(){
  else {document.getElementById('status').textContent='ফাইল আপলোড ও দেখতে Login করুন।';document.getElementById('adminDashboard').style.display='none';document.getElementById('adminFiles').innerHTML='';clearGalleries();}
 }
 async function signOut(){if(!currentUser){openLogin();return;}if(!confirm('আপনি কি এই ডিভাইস থেকে Logout করতে চান?'))return;const {error}=await sb.auth.signOut();if(error){alert('Logout করা যায়নি: '+error.message);return;}await refreshSession();showPage('home');}
-function clearGalleries(){['photos','videosList','documentsList'].forEach(id=>document.getElementById(id).innerHTML='<p class="empty">Login করলে আপনার ফাইল এখানে দেখা যাবে।</p>');}
+function clearGalleries(){['photos','videosList','documentsList'].forEach(id=>{const area=document.getElementById(id);area.querySelectorAll('[data-object-url]').forEach(card=>{const url=card.dataset.objectUrl;if(url)URL.revokeObjectURL(url);});area.innerHTML='<p class="empty">Login করলে আপনার ফাইল এখানে দেখা যাবে।</p>';});}
 function addCard(id,card){const area=document.getElementById(id);if(area.querySelector('.empty'))area.innerHTML='';area.appendChild(card);}
 function targetFor(type){return type&&type.startsWith('image/')?'photos':type&&type.startsWith('video/')?'videosList':'documentsList';}
 async function loadMyFiles(){
@@ -405,7 +405,7 @@ async function loadMyFiles(){
   const {data:blob,error:downloadError}=await sb.storage.from('angel-memories').download(item.object_path);
   if(loadToken!==galleryLoadToken)return;
   if(downloadError)continue;
-  const url=URL.createObjectURL(blob),card=document.createElement('div');card.className='card';card.dataset.mediaKey=String(item.object_path||item.id);
+  const url=URL.createObjectURL(blob),card=document.createElement('div');card.className='card';card.dataset.mediaKey=String(item.object_path||item.id);card.dataset.objectUrl=url;
   if(item.content_type?.startsWith('image/')){const img=document.createElement('img');img.src=url;img.alt=item.file_name;img.onclick=()=>openPhotoView(url,item);card.appendChild(img)}
   else if(item.content_type?.startsWith('video/')){const video=document.createElement('video');video.src=url;video.controls=true;card.appendChild(video)}
   else{const label=document.createElement('p');label.textContent='📄 '+item.file_name;card.appendChild(label)}
