@@ -239,7 +239,7 @@ nav a{font-size:clamp(14px,2vw,18px);white-space:nowrap;padding:9px 5px}
 <main>
 <section class="hero page-section active-page" data-page="home" id="home"><img class="hero-banner-image" src="hero2.png" alt="Angel Memories — Your Memories • Our Care"></section>
 
-<div class="actions page-section active-page" data-page="home"><button type="button" onclick="startHomeUpload()">☁ Choose Files & Upload</button><button onclick="showPage('gallery');setTimeout(()=>document.getElementById('search').focus(),80)">🔍 Search Memories</button></div>
+<div class="actions page-section active-page" data-page="home"><button type="button" onclick="startHomeUpload()">☁ Choose Files & Upload</button><button type="button" onclick="openMemorySearch()">🔍 Search Memories</button></div>
 <section class="page-section active-page" data-page="home"><h2 class="section-title">✨ Your Memories, Our Care ✨</h2><p class="subtitle">আপনার বিশেষ মুহূর্তগুলো যত্নে রাখুন চিরকাল...</p>
  <div class="features">
 <div class="feature" role="button" tabindex="0" onclick="showPage('gallery')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showPage('gallery')}"><span>📸</span>Photo Gallery</div>
@@ -253,7 +253,7 @@ nav a{font-size:clamp(14px,2vw,18px);white-space:nowrap;padding:9px 5px}
 </section>
 <section class="home-share page-section active-page" data-page="home" aria-label="Share Angel Memories"><h2>💙 Share Angel Memories</h2><p>আপনার পরিবার ও বন্ধুদের সঙ্গে Angel Memories পরিচয় করিয়ে দিন।</p><div class="home-share-buttons"><button type="button" onclick="shareWebsite()">🔗 Link Share</button><button type="button" onclick="shareSocial('facebook')">ⓕ Facebook</button><button type="button" onclick="shareSocial('whatsapp')">🟢 WhatsApp</button><button type="button" onclick="shareSocial('imo')">💬 imo</button><button type="button" onclick="shareSocial('messenger')">🔵 Messenger</button><button type="button" onclick="shareSocial('telegram')">✈️ Telegram</button><button type="button" onclick="shareSocial('x')">𝕏 Share</button></div><p id="homeShareMessage" role="status" aria-live="polite"></p></section>
 <section class="page-section" data-page="upload" id="upload" style="display:none"><h2 class="section-title">☁ One Click Upload</h2><div class="panel"><p>একবার বাটনে চাপ দিয়ে ছবি, ভিডিও অথবা ডকুমেন্ট নির্বাচন করুন। নির্বাচন করলেই আপলোড শুরু হবে।</p><input type="file" id="fileInput" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt" hidden onchange="uploadFiles()"><button type="button" id="chooseUploadBtn" onclick="document.getElementById('fileInput').click()">☁ Choose Files & Upload</button><p id="status" role="status" aria-live="polite"></p></div></section>
-<section class="page-section" data-page="gallery" id="gallery"><h2 class="section-title">📸 Photo Gallery</h2><input id="search" type="search" placeholder="Search your memories..." oninput="filterGallery()"><div class="gallery" id="photos"><p class="empty">আপনার ছবিগুলো এখানে দেখা যাবে।</p></div></section>
+<section class="page-section" data-page="gallery" id="gallery"><h2 class="section-title">🔍 Search Memories</h2><p class="subtitle">আপনার অ্যাকাউন্টের ছবি, ভিডিও ও ডকুমেন্টের নাম লিখে খুঁজুন।</p><input id="search" type="search" placeholder="ছবি, ভিডিও বা ডকুমেন্টের নাম লিখুন..." oninput="searchMemories()" style="display:block;width:min(92%,560px);margin:16px auto"><p id="searchStatus" class="empty" role="status" aria-live="polite">খুঁজতে উপরের বক্সে নাম লিখুন।</p><div class="gallery" id="searchResults"></div><h3 class="section-title">📸 Photo Gallery</h3><div class="gallery" id="photos"><p class="empty">আপনার ছবিগুলো এখানে দেখা যাবে।</p></div></section>
 <section class="page-section" data-page="videos" id="videos"><h2 class="section-title">🎬 Video Gallery</h2><div class="gallery" id="videosList"><p class="empty">আপনার ভিডিওগুলো এখানে দেখা যাবে।</p></div></section>
 <section class="page-section" data-page="documents" id="documents"><h2 class="section-title">📁 Documents</h2><div class="gallery" id="documentsList"><p class="empty">আপনার ডকুমেন্ট এখানে দেখা যাবে।</p></div></section>
 <section class="page-section" data-page="adminDashboard" id="adminDashboard" style="display:none"><h2 class="section-title">🛡️ Admin Dashboard</h2><div class="admin-tools"><p id="adminSummary">Loading administration data...</p><div id="adminFiles"><p class="empty">ফাইল লোড হচ্ছে...</p></div></div></section>
@@ -504,7 +504,38 @@ async function uploadFiles(){
  status.textContent=uploaded+'টি ফাইল আপলোড সম্পন্ন ❤️'+(failed?' | '+failed+'টি আপলোড হয়নি।':'');
  await loadMyFiles();
 }
-function filterGallery(){const query=document.getElementById('search').value.toLowerCase();document.querySelectorAll('#photos .card').forEach(card=>{card.style.display=card.textContent.toLowerCase().includes(query)?'block':'none'})}
+function openMemorySearch(){
+ if(!currentUser){openLogin();return;}
+ showPage('gallery');
+ setTimeout(()=>{const field=document.getElementById('search');if(field)field.focus();},150);
+}
+let memorySearchToken=0;
+async function searchMemories(){
+ const field=document.getElementById('search'),host=document.getElementById('searchResults'),status=document.getElementById('searchStatus');
+ if(!field||!host||!status)return;
+ const query=field.value.trim();
+ const token=++memorySearchToken;
+ host.replaceChildren();
+ if(!currentUser){status.textContent='স্মৃতি খুঁজতে আগে Login করুন।';return;}
+ if(query.length<1){status.textContent='খুঁজতে উপরের বক্সে নাম লিখুন।';return;}
+ status.textContent='স্মৃতি খোঁজা হচ্ছে...';
+ try{
+  const {data:rows,error}=await sb.from('media_items').select('id,user_id,object_path,file_name,content_type,created_at').eq('user_id',currentUser.id).ilike('file_name','%'+query.replace(/[\\%_]/g,'\\\\function filterGallery(){const query=document.getElementById('search').value.toLowerCase();document.querySelectorAll('#photos .card').forEach(card=>{card.style.display=card.textContent.toLowerCase().includes(query)?'block':'none'})}')+'%').order('created_at',{ascending:false}).limit(50);
+  if(token!==memorySearchToken)return;
+  if(error)throw error;
+  if(!rows?.length){status.textContent='কোনো স্মৃতি পাওয়া যায়নি। অন্য নাম দিয়ে চেষ্টা করুন।';return;}
+  status.textContent='মোট '+rows.length+'টি স্মৃতি পাওয়া গেছে।';
+  for(const item of rows){
+   const card=document.createElement('div');card.className='card';
+   const info=document.createElement('p');
+   const kind=item.content_type?.startsWith('image/')?'📸 ছবি':item.content_type?.startsWith('video/')?'🎬 ভিডিও':'📄 ডকুমেন্ট';
+   info.textContent=kind+' • '+item.file_name+' • '+new Date(item.created_at).toLocaleDateString('bn-BD');
+   const download=document.createElement('button');download.type='button';download.textContent='⬇ Download';
+   download.onclick=async()=>{download.disabled=true;download.textContent='লোড হচ্ছে...';try{const {data:blob,error}=await sb.storage.from('angel-memories').download(item.object_path);if(error)throw error;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=item.file_name;a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);}catch(e){alert('ডাউনলোড হয়নি: '+(e.message||e));}finally{download.disabled=false;download.textContent='⬇ Download';}};
+   card.append(info,download);host.appendChild(card);
+  }
+ }catch(e){if(token===memorySearchToken)status.textContent='সার্চ করা যায়নি: '+(e.message||'আবার চেষ্টা করুন।');}
+}
 sb.auth.onAuthStateChange(()=>{setTimeout(()=>refreshSession(),0)});
 const initialPage=location.hash.replace('#','');renderPage(initialPage||'home');if(!history.state?.angelMemories){history.replaceState({angelMemories:true,base:true,page:currentPage},'','#'+currentPage);}
 refreshSession();
