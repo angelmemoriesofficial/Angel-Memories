@@ -131,7 +131,7 @@ let currentUser=null;
 let currentRole='user';
 let currentPage='home';
 let pageHistory=[];
-let activePhotoItem=null,photoZoom=1;
+let activePhotoItem=null,photoZoom=1,galleryLoadToken=0;
 function openLogin(){document.getElementById('loginModal').style.display='flex';}
 function showPage(page,fromBack=false){if(page==='adminDashboard'&&currentRole!=='admin'){page='home';}if(!fromBack&&page!==currentPage){pageHistory.push(currentPage);}currentPage=page;document.querySelectorAll('.page-section').forEach(el=>el.classList.toggle('active-page',el.dataset.page===page));document.querySelectorAll('#mainNav a').forEach(a=>a.classList.toggle('active',a.dataset.page===page));if(location.hash!=='#'+page)history.replaceState(null,'','#'+page);const back=document.getElementById('backBtn');if(back)back.disabled=pageHistory.length===0;window.scrollTo({top:0,behavior:'smooth'});if(page==='adminDashboard'&&currentUser&&currentRole==='admin')loadAdminFiles();if(page==='profile')loadProfile();if(page==='settings')loadSettings();}
 function goBack(){if(pageHistory.length){const previous=pageHistory.pop();showPage(previous,true);}else{showPage('home',true);}}
@@ -181,13 +181,22 @@ function clearGalleries(){['photos','videosList','documentsList'].forEach(id=>do
 function addCard(id,card){const area=document.getElementById(id);if(area.querySelector('.empty'))area.innerHTML='';area.appendChild(card);}
 function targetFor(type){return type&&type.startsWith('image/')?'photos':type&&type.startsWith('video/')?'videosList':'documentsList';}
 async function loadMyFiles(){
- clearGalleries();const {data:rows,error}=await sb.from('media_items').select('*').order('created_at',{ascending:false});
+ const loadToken=++galleryLoadToken;
+ clearGalleries();
+ const {data:rows,error}=await sb.from('media_items').select('*').order('created_at',{ascending:false});
+ if(loadToken!==galleryLoadToken)return;
  if(error){document.getElementById('status').textContent='ফাইল লোড হয়নি: '+error.message;return}
- if(!rows?.length){clearGalleries();return}
- for(const item of rows){
+ // একই Storage object-এর একাধিক database row থাকলেও Gallery-তে একবারই দেখাবে।
+ const uniqueRows=[...new Map((rows||[]).map(item=>[item.object_path||item.id,item])).values()];
+ if(!uniqueRows.length){clearGalleries();return}
+ for(const item of uniqueRows){
+  if(loadToken!==galleryLoadToken)return;
+  const areaId=targetFor(item.content_type),area=document.getElementById(areaId);
+  if(area.querySelector('[data-media-key="'+CSS.escape(String(item.object_path||item.id))+'"]'))continue;
   const {data:blob,error:downloadError}=await sb.storage.from('angel-memories').download(item.object_path);
+  if(loadToken!==galleryLoadToken)return;
   if(downloadError)continue;
-  const url=URL.createObjectURL(blob),card=document.createElement('div');card.className='card';
+  const url=URL.createObjectURL(blob),card=document.createElement('div');card.className='card';card.dataset.mediaKey=String(item.object_path||item.id);
   if(item.content_type?.startsWith('image/')){const img=document.createElement('img');img.src=url;img.alt=item.file_name;img.onclick=()=>openPhotoView(url,item);card.appendChild(img)}
   else if(item.content_type?.startsWith('video/')){const video=document.createElement('video');video.src=url;video.controls=true;card.appendChild(video)}
   else{const label=document.createElement('p');label.textContent='📄 '+item.file_name;card.appendChild(label)}
