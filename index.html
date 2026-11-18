@@ -65,10 +65,10 @@ footer p{color:#ddd}
   <h1>Angel Memories</h1>
   <h2>Your Memories • Our Care</h2>
   <p>আপনার বিশেষ মুহূর্তগুলো যত্নে রাখুন চিরকাল...</p>
-  <button onclick="document.getElementById('upload').scrollIntoView()">☁ Upload Your Memories</button>
+  <button onclick="goToUpload()">☁ Upload Your Memories</button>
  </div>
 </section>
-<div class="actions"><button onclick="document.getElementById('upload').scrollIntoView()">☁ Upload Your Files</button><button onclick="document.getElementById('search').focus()">🔍 Search Memories</button></div>
+<div class="actions"><button onclick="goToUpload()">☁ Upload Your Files</button><button onclick="document.getElementById('search').focus()">🔍 Search Memories</button></div>
 <section><h2 class="section-title">✨ Your Memories, Our Care ✨</h2><p class="subtitle">আপনার বিশেষ মুহূর্তগুলো যত্নে রাখুন চিরকাল...</p>
  <div class="features"><div class="feature"><span>📸</span>Photo Gallery</div><div class="feature"><span>🎬</span>Video Gallery</div><div class="feature"><span>📁</span>Documents</div><div class="feature"><span>🛡️</span>Secure & Private</div><div class="feature"><span>☁️</span>Cloud Storage</div><div class="feature"><span>⚡</span>Fast Access</div><div class="feature"><span>👨‍👩‍👧</span>Share Together</div></div>
 </section>
@@ -92,6 +92,7 @@ let authMode='login';
 let currentUser=null;
 let currentRole='user';
 function openLogin(){document.getElementById('loginModal').style.display='flex';}
+function goToUpload(){if(!currentUser){openLogin();return;}document.getElementById('upload').scrollIntoView({behavior:'smooth'});}
 function closeLogin(){document.getElementById('loginModal').style.display='none';}
 function toggleAuthMode(){authMode=authMode==='login'?'signup':'login';document.getElementById('authHeading').textContent=authMode==='login'?'Login to your account':'Create your Angel Memories account';document.getElementById('authSubmit').textContent=authMode==='login'?'Login':'Sign Up';document.getElementById('authToggle').textContent=authMode==='login'?'Create new account':'Already have an account? Login';document.getElementById('authMessage').textContent='';}
 async function submitAuth(){
@@ -178,8 +179,8 @@ async function createShareLink(item,button){
   if(error)throw error;
   if(data?.error)throw new Error(data.error);
   const link=location.origin+location.pathname+'?share='+encodeURIComponent(data.token);
-  if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(link);alert('৭ দিনের Share Link কপি হয়েছে।\n'+link)}
-  else prompt('এই Share Link কপি করুন:',link);
+  let copied=false;try{if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(link);copied=true}}catch(_e){}
+  if(copied)alert('৭ দিনের Share Link কপি হয়েছে।\n'+link);else prompt('এই Share Link কপি করুন:',link);
   button.textContent='✓ Shared';
  }catch(e){alert('Share তৈরি হয়নি: '+(e.message||'আবার চেষ্টা করুন'));button.textContent='🔗 Share'}
  finally{button.disabled=false}
