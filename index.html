@@ -90,7 +90,7 @@ footer p{color:#ddd}
 </div>
 </section>
 <section class="home-share page-section active-page" data-page="home" aria-label="Share Angel Memories"><h2>💙 Share Angel Memories</h2><p>আপনার পরিবার ও বন্ধুদের সঙ্গে Angel Memories পরিচয় করিয়ে দিন।</p><div class="home-share-buttons"><button type="button" onclick="shareWebsite()">🔗 Link Share</button><button type="button" onclick="shareSocial('facebook')">ⓕ Facebook</button><button type="button" onclick="shareSocial('whatsapp')">🟢 WhatsApp</button><button type="button" onclick="shareSocial('imo')">💬 imo</button><button type="button" onclick="shareSocial('messenger')">🔵 Messenger</button><button type="button" onclick="shareSocial('telegram')">✈️ Telegram</button><button type="button" onclick="shareSocial('x')">𝕏 Share</button></div><p id="homeShareMessage" role="status" aria-live="polite"></p></section>
-<section class="page-section" data-page="upload" id="upload" style="display:none"><h2 class="section-title">☁ Upload Your Memories</h2><div class="panel"><p>ছবি, ভিডিও অথবা ডকুমেন্ট নির্বাচন করুন</p><input type="file" id="fileInput" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt"><br><button onclick="uploadFiles()">Upload Files</button><p id="status"></p></div></section>
+<section class="page-section" data-page="upload" id="upload" style="display:none"><h2 class="section-title">☁ One Click Upload</h2><div class="panel"><p>একবার বাটনে চাপ দিয়ে ছবি, ভিডিও অথবা ডকুমেন্ট নির্বাচন করুন। নির্বাচন করলেই আপলোড শুরু হবে।</p><input type="file" id="fileInput" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt" hidden onchange="uploadFiles()"><button type="button" id="chooseUploadBtn" onclick="document.getElementById('fileInput').click()">☁ Choose Files & Upload</button><p id="status" role="status" aria-live="polite"></p></div></section>
 <section class="page-section" data-page="gallery" id="gallery"><h2 class="section-title">📸 Photo Gallery</h2><input id="search" type="search" placeholder="Search your memories..." oninput="filterGallery()"><div class="gallery" id="photos"><p class="empty">আপনার ছবিগুলো এখানে দেখা যাবে।</p></div></section>
 <section class="page-section" data-page="videos" id="videos"><h2 class="section-title">🎬 Video Gallery</h2><div class="gallery" id="videosList"><p class="empty">আপনার ভিডিওগুলো এখানে দেখা যাবে।</p></div></section>
 <section class="page-section" data-page="documents" id="documents"><h2 class="section-title">📁 Documents</h2><div class="gallery" id="documentsList"><p class="empty">আপনার ডকুমেন্ট এখানে দেখা যাবে।</p></div></section>
@@ -247,20 +247,28 @@ async function openSharedFile(){
  }catch(e){document.getElementById('sharedContent').textContent=e.message||'এই Share Link কাজ করছে না।'}
 }
 async function uploadFiles(){
- if(!currentUser){openLogin();return}
- const files=Array.from(document.getElementById('fileInput').files),status=document.getElementById('status');
- if(!files.length){status.textContent='প্রথমে ফাইল নির্বাচন করুন।';return}
- status.textContent='আপলোড হচ্ছে...';
- for(const file of files){
-  if(file.size>50*1024*1024){status.textContent=file.name+' ৫০ MB-এর বেশি, বাদ দেওয়া হয়েছে।';continue}
+ const input=document.getElementById('fileInput'),status=document.getElementById('status'),button=document.getElementById('chooseUploadBtn');
+ if(!currentUser){input.value='';openLogin();return}
+ const files=Array.from(input.files||[]);
+ if(!files.length)return;
+ let uploaded=0,failed=0;
+ button.disabled=true;
+ for(let i=0;i<files.length;i++){
+  const file=files[i];
+  status.textContent='আপলোড হচ্ছে ('+(i+1)+'/'+files.length+'): '+file.name;
+  if(file.size>50*1024*1024){status.textContent=file.name+' ৫০ MB-এর বেশি, বাদ দেওয়া হয়েছে।';failed++;continue}
   const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
   const path=currentUser.id+'/'+crypto.randomUUID()+'-'+safeName;
   const {error:uploadError}=await sb.storage.from('angel-memories').upload(path,file,{contentType:file.type||'application/octet-stream',upsert:false});
-  if(uploadError){status.textContent='Upload error: '+uploadError.message;continue}
+  if(uploadError){status.textContent='Upload error ('+file.name+'): '+uploadError.message;failed++;continue}
   const {error:rowError}=await sb.from('media_items').insert({user_id:currentUser.id,object_path:path,file_name:file.name,content_type:file.type||'application/octet-stream',size_bytes:file.size});
-  if(rowError){status.textContent='ফাইল আপলোড হয়েছে, কিন্তু তালিকায় যোগ হয়নি: '+rowError.message;continue}
+  if(rowError){status.textContent='ফাইল আপলোড হয়েছে, কিন্তু তালিকায় যোগ হয়নি ('+file.name+'): '+rowError.message;failed++;continue}
+  uploaded++;
  }
- document.getElementById('fileInput').value='';status.textContent='আপলোড সম্পন্ন ❤️';await loadMyFiles();
+ input.value='';
+ button.disabled=false;
+ status.textContent=uploaded+'টি ফাইল আপলোড সম্পন্ন ❤️'+(failed?' | '+failed+'টি আপলোড হয়নি।':'');
+ await loadMyFiles();
 }
 function filterGallery(){const query=document.getElementById('search').value.toLowerCase();document.querySelectorAll('#photos .card').forEach(card=>{card.style.display=card.textContent.toLowerCase().includes(query)?'block':'none'})}
 sb.auth.onAuthStateChange(()=>{setTimeout(()=>refreshSession(),0)});
