@@ -73,11 +73,10 @@ footer p{color:#ddd}
   <h1>Angel Memories</h1>
   <h2>Your Memories • Our Care</h2>
   <p>আপনার বিশেষ মুহূর্তগুলো যত্নে রাখুন চিরকাল...</p>
-  <button onclick="goToUpload()">☁ Upload Your Memories</button>
  </div>
 </section>
 
-<div class="actions page-section active-page" data-page="home"><button onclick="goToUpload()">☁ Choose Files & Upload</button><button onclick="showPage('gallery');setTimeout(()=>document.getElementById('search').focus(),80)">🔍 Search Memories</button></div>
+<div class="actions page-section active-page" data-page="home"><button onclick="document.getElementById('fileInput').click()">☁ Choose Files & Upload</button><button onclick="showPage('gallery');setTimeout(()=>document.getElementById('search').focus(),80)">🔍 Search Memories</button></div>
 <section class="page-section active-page" data-page="home"><h2 class="section-title">✨ Your Memories, Our Care ✨</h2><p class="subtitle">আপনার বিশেষ মুহূর্তগুলো যত্নে রাখুন চিরকাল...</p>
  <div class="features">
 <div class="feature" role="button" tabindex="0" onclick="showPage('gallery')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showPage('gallery')}"><span>📸</span>Photo Gallery</div>
