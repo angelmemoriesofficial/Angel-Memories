@@ -228,16 +228,6 @@ nav a{font-size:clamp(14px,2vw,18px);white-space:nowrap;padding:9px 5px}
 }
 
 
-/* Clean hero artwork: conceal the embedded navigation and action chips in the banner image only. */
-.hero.page-section.active-page{position:relative;isolation:isolate}
-.hero.page-section.active-page::after{
-  content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
-  background:linear-gradient(to bottom,
-    #061535 0%,#061535 13%,
-    transparent 13%,transparent 81%,
-    #061535 81%,#061535 100%);
-}
-.hero-banner-image{position:relative;z-index:1}
 </style>
 </head>
 <body>
@@ -247,7 +237,7 @@ nav a{font-size:clamp(14px,2vw,18px);white-space:nowrap;padding:9px 5px}
  <div class="header-actions"><button id="backBtn" onclick="goBack()" title="আগের পেজে ফিরে যান">← Back</button><button id="profileBtn" onclick="openProfile()"><img id="profileBtnPhoto" src="logo.png" alt="" class="profile-btn-photo"><span>Profile</span></button><button id="adminBtn" style="display:none" onclick="showPage('adminDashboard')">🛡️ Admin</button><button id="settingsBtn" onclick="showPage('settings')">⚙️ Settings</button><button id="loginBtn" onclick="openLogin()">Login</button></div>
 </header>
 <main>
-<section class="hero page-section active-page" data-page="home" id="home"><img class="hero-banner-image" src="angel-memories-hero.jpg" alt="Angel Memories — Your Memories • Our Care"></section>
+<section class="hero page-section active-page" data-page="home" id="home"><img class="hero-banner-image" src="hero2.png" alt="Angel Memories — Your Memories • Our Care"></section>
 
 <div class="actions page-section active-page" data-page="home"><button type="button" onclick="startHomeUpload()">☁ Choose Files & Upload</button><button onclick="showPage('gallery');setTimeout(()=>document.getElementById('search').focus(),80)">🔍 Search Memories</button></div>
 <section class="page-section active-page" data-page="home"><h2 class="section-title">✨ Your Memories, Our Care ✨</h2><p class="subtitle">আপনার বিশেষ মুহূর্তগুলো যত্নে রাখুন চিরকাল...</p>
