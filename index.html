@@ -174,7 +174,25 @@ nav a{font-size:clamp(14px,2vw,18px);white-space:nowrap;padding:9px 5px}
 <div class="settings-card"><h3>🚪 Session</h3><p>এই ডিভাইস থেকে আপনার অ্যাকাউন্ট Logout করুন।</p><button class="danger" onclick="signOut()">Logout</button></div>
 <div class="settings-card" id="adminSettingsCard" style="display:none"><h3>🛠️ Admin Settings</h3><p>আপনি Admin হিসেবে লগইন করেছেন। User access ও file deletion সার্ভার-সাইড নিরাপত্তা নীতির মাধ্যমে নিয়ন্ত্রিত।</p><button onclick="showPage('adminDashboard')">Admin Dashboard খুলুন</button></div>
 </div></section>
-<section class="page-section" data-page="about" id="about"><h2 class="section-title">💙 About Angel Memories</h2><div class="panel about"><img src="logo.png" width="110" alt="Angel Memories Logo"><p>Welcome to Angel Memories.</p><p>একটি সুন্দর ডিজিটাল জায়গা, যেখানে আপনার প্রিয় ছবি, ভিডিও ও গুরুত্বপূর্ণ ডকুমেন্ট সাজিয়ে রাখতে পারবেন।</p><h3 style="color:#ffd45c">Your Story, Your Memories</h3></div></section>
+<section class="page-section" data-page="about" id="about">
+ <h2 class="section-title">💙 আমাদের সম্পর্কে | About Angel Memories</h2>
+ <div class="panel about">
+  <img src="logo.png" width="110" alt="Angel Memories Logo">
+  <h2 style="color:#ffd45c;margin:10px 0">Angel Memories</h2>
+  <h3 style="color:#fff;margin:6px 0 18px">Your Memories • Our Care</h3>
+  <p style="font-size:17px;line-height:1.9">Angel Memories হলো আপনার ব্যক্তিগত স্মৃতি ও গুরুত্বপূর্ণ ফাইল গুছিয়ে রাখার একটি ডিজিটাল জায়গা। জীবনের প্রিয় মুহূর্তগুলো—ছবি, ভিডিও এবং প্রয়োজনীয় ডকুমেন্ট—এক জায়গায় সংরক্ষণ, খুঁজে পাওয়া এবং প্রিয়জনদের সঙ্গে শেয়ার করার সুবিধা দেওয়াই আমাদের লক্ষ্য।</p>
+  <div style="text-align:left;max-width:650px;margin:22px auto;line-height:1.9">
+   <h3 style="color:#ffd45c;text-align:center">আমাদের লক্ষ্য</h3>
+   <p>📸 <b>স্মৃতি এক জায়গায়:</b> আপনার ছবি, ভিডিও ও ডকুমেন্ট সুন্দরভাবে সাজিয়ে রাখুন।</p>
+   <p>🔐 <b>ব্যক্তিগত অ্যাকাউন্ট:</b> প্রত্যেক ব্যবহারকারী নিজের অ্যাকাউন্টে প্রবেশ করে নিজের ফাইল দেখতে ও পরিচালনা করতে পারবেন।</p>
+   <p>🤝 <b>সহজে শেয়ার:</b> প্রয়োজন অনুযায়ী প্রিয়জনদের সঙ্গে স্মৃতি ভাগ করে নিন।</p>
+   <p>🛡️ <b>দায়িত্বশীল ব্যবস্থাপনা:</b> ফাইল মুছে ফেলার অনুমতি কেবল অ্যাডমিনের জন্য নির্ধারিত।</p>
+  </div>
+  <p style="font-size:16px;line-height:1.8">আমরা চাই, আপনার প্রতিটি স্মৃতি থাকুক যত্নে, গুছিয়ে এবং সহজে খুঁজে পাওয়ার মতো করে।</p>
+  <h2 style="color:#ffd45c;margin-top:22px">Your Story, Your Memories</h2>
+  <p style="color:#dce5ff">Angel Memories — আপনার স্মৃতির যত্নে।</p>
+ </div>
+</section>
 <section class="page-section" data-page="contact" id="contact"><h2 class="section-title">📩 Contact Us</h2><div class="panel"><img src="logo.png" width="90" alt="Angel Memories Logo"><p>Angel Memories Support</p><p>আপনার মতামত ও সহযোগিতার জন্য আমাদের সঙ্গে যোগাযোগ করুন।</p></div></section>
 </main>
 <div class="page-logout" style="text-align:center;padding:18px 12px 8px"><button type="button" id="footerLogoutBtn" style="display:none" onclick="signOut()">↪ Logout</button></div>
