@@ -144,6 +144,69 @@ nav a{font-size:clamp(14px,2vw,18px);white-space:nowrap;padding:9px 5px}
 .contact-footer{text-align:center;color:#ffd45c;border-top:1px solid #526b96;margin-top:25px;padding-top:18px;font-weight:bold;letter-spacing:.5px}
 @media(max-width:560px){.contact-grid{grid-template-columns:1fr}.contact-card{border-radius:18px}.contact-item{padding:13px}.contact-brand img{width:68px;height:62px}}
 
+
+/* Angel Memories — premium hero refinement */
+.hero.page-section.active-page{
+  position:relative;isolation:isolate;display:flex!important;align-items:center;
+  justify-content:center;padding:clamp(12px,2.2vw,28px) clamp(10px,3.2vw,42px);
+  overflow:hidden;
+  background:
+    radial-gradient(ellipse at 50% 5%,rgba(255,212,92,.19),transparent 48%),
+    linear-gradient(145deg,#0b2450 0%,#061535 52%,#020b20 100%);
+}
+.hero.page-section.active-page:before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 35%,rgba(0,0,0,.38) 100%);
+}
+.hero-banner-image{
+  width:min(100%,1500px);height:auto;max-height:min(74vh,760px);
+  object-fit:contain;border:1px solid rgba(255,220,125,.82);
+  border-radius:clamp(12px,2vw,24px);
+  box-shadow:0 0 0 5px rgba(255,212,92,.07),0 18px 48px rgba(0,0,0,.48),0 0 32px rgba(255,198,64,.15);
+  filter:saturate(1.06) contrast(1.035);
+}
+.actions.page-section.active-page{
+  position:relative;gap:14px;padding:25px 14px 30px;
+  background:linear-gradient(180deg,#061535 0%,#0a2045 100%);
+}
+.actions.page-section.active-page:before{
+  content:"";position:absolute;top:0;left:12%;right:12%;height:1px;
+  background:linear-gradient(90deg,transparent,#ffd45c,transparent);
+}
+.actions.page-section.active-page button{
+  min-height:48px;padding:13px 23px;border:1px solid #fff0b5;
+  background:linear-gradient(135deg,#fff0b0 0%,#ffd45c 45%,#d99b12 100%);
+  box-shadow:0 7px 18px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.7);
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+.actions.page-section.active-page button:hover{
+  transform:translateY(-3px);box-shadow:0 11px 24px rgba(0,0,0,.36),0 0 18px rgba(255,212,92,.2);
+}
+.page-section[data-page="home"] .section-title{
+  font-family:Georgia,serif;font-size:clamp(25px,4vw,38px);
+  text-shadow:0 3px 18px rgba(255,194,54,.2);letter-spacing:.3px;
+}
+.page-section[data-page="home"] .subtitle{
+  font-size:clamp(15px,2.2vw,19px);line-height:1.9;max-width:720px;margin:8px auto 22px;
+}
+.page-section[data-page="home"] .features{max-width:1120px;margin:26px auto 8px;gap:16px}
+.page-section[data-page="home"] .feature{
+  min-height:126px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:linear-gradient(145deg,rgba(22,49,91,.98),rgba(7,24,54,.98));
+  border:1px solid rgba(255,212,92,.72);border-radius:18px;
+  box-shadow:0 9px 24px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.06);
+}
+.page-section[data-page="home"] .feature span{filter:drop-shadow(0 3px 5px rgba(255,212,92,.25))}
+.home-share{border-radius:22px;box-shadow:0 14px 36px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.07)}
+@media(max-width:650px){
+  .hero.page-section.active-page{padding:9px 8px 14px}
+  .hero-banner-image{width:100%;max-height:48vh;border-radius:13px;box-shadow:0 0 0 3px rgba(255,212,92,.07),0 10px 26px rgba(0,0,0,.42)}
+  .actions.page-section.active-page{padding:19px 10px 23px;gap:10px}
+  .actions.page-section.active-page button{flex:1 1 145px;padding:12px 10px;font-size:13px}
+  .page-section[data-page="home"] .features{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+  .page-section[data-page="home"] .feature{min-height:112px;padding:17px 7px;font-size:13px}
+}
+
 </style>
 </head>
 <body>
