@@ -76,7 +76,7 @@ footer p{color:#ddd}
  </div>
 </section>
 
-<div class="actions page-section active-page" data-page="home"><button onclick="document.getElementById('fileInput').click()">☁ Choose Files & Upload</button><button onclick="showPage('gallery');setTimeout(()=>document.getElementById('search').focus(),80)">🔍 Search Memories</button></div>
+<div class="actions page-section active-page" data-page="home"><button type="button" onclick="startHomeUpload()">☁ Choose Files & Upload</button><button onclick="showPage('gallery');setTimeout(()=>document.getElementById('search').focus(),80)">🔍 Search Memories</button></div>
 <section class="page-section active-page" data-page="home"><h2 class="section-title">✨ Your Memories, Our Care ✨</h2><p class="subtitle">আপনার বিশেষ মুহূর্তগুলো যত্নে রাখুন চিরকাল...</p>
  <div class="features">
 <div class="feature" role="button" tabindex="0" onclick="showPage('gallery')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showPage('gallery')}"><span>📸</span>Photo Gallery</div>
@@ -244,6 +244,12 @@ async function openSharedFile(){
   else if(data.content_type?.startsWith('video/')){const video=document.createElement('video');video.src=data.signed_url;video.controls=true;video.style.maxWidth='100%';box.appendChild(video)}
   const a=document.createElement('a');a.href=data.signed_url;a.target='_blank';a.rel='noopener';a.textContent='⬇ Download / Open';a.style.color='#ffd45c';a.style.display='block';a.style.margin='18px';box.appendChild(a);
  }catch(e){document.getElementById('sharedContent').textContent=e.message||'এই Share Link কাজ করছে না।'}
+}
+function startHomeUpload(){
+ if(!currentUser){openLogin();return}
+ showPage('upload');
+ const input=document.getElementById('fileInput');
+ if(input){setTimeout(()=>input.click(),120)}
 }
 async function uploadFiles(){
  const input=document.getElementById('fileInput'),status=document.getElementById('status'),button=document.getElementById('chooseUploadBtn');
