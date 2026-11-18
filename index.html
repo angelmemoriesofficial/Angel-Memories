@@ -227,6 +227,17 @@ nav a{font-size:clamp(14px,2vw,18px);white-space:nowrap;padding:9px 5px}
   .hero-banner-image{animation:none;transition:none}
 }
 
+
+/* Clean hero artwork: conceal the embedded navigation and action chips in the banner image only. */
+.hero.page-section.active-page{position:relative;isolation:isolate}
+.hero.page-section.active-page::after{
+  content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(to bottom,
+    #061535 0%,#061535 13%,
+    transparent 13%,transparent 81%,
+    #061535 81%,#061535 100%);
+}
+.hero-banner-image{position:relative;z-index:1}
 </style>
 </head>
 <body>
