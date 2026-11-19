@@ -319,11 +319,14 @@ nav a{font-size:clamp(14px,2vw,18px);white-space:nowrap;padding:9px 5px}
 <div class="modal" id="loginModal"><div class="modalbox"><button class="close" onclick="closeLogin()">✕</button><img src="logo.png" alt="Angel Memories Logo"><h2>Angel Memories</h2><p id="authHeading">Login to your account</p><button type="button" id="googleLoginBtn" onclick="signInWithGoogle()" style="width:100%;margin:10px 0;background:#fff;color:#202124;border:1px solid #dadce0;border-radius:9px;padding:12px 16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px"><span aria-hidden="true" style="font-size:19px;font-weight:bold;color:#4285f4">G</span> Continue with Google</button><p style="font-size:12px;color:#cbd5e1;margin:4px 0 12px">অথবা Email দিয়ে Login করুন</p><input id="authEmail" type="email" placeholder="Email address" autocomplete="email"><br><input id="authPassword" type="password" placeholder="Password (minimum 8 characters)" autocomplete="current-password"><br><button id="authSubmit" onclick="submitAuth()">Login</button><p><button style="background:#263c63;color:white" onclick="toggleAuthMode()" id="authToggle">Create new account</button></p><p id="authMessage" style="font-size:13px;color:#ffe58a"></p></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script type="module">
+import { Capacitor } from 'https://esm.sh/@capacitor/core@8.6.2';
 import { App } from 'https://esm.sh/@capacitor/app@8.0.0';
 import { Browser } from 'https://esm.sh/@capacitor/browser@8.0.0';
+// Expose the actual Capacitor runtime to the legacy inline application scripts.
+window.Capacitor=Capacitor;
 window.AMApp=App;
 window.AMBrowser=Browser;
-if(window.Capacitor?.isNativePlatform?.())window.dispatchEvent(new Event('angelmemories-native-ready'));
+window.dispatchEvent(new Event('angelmemories-native-ready'));
 </script>
 
 <script>
