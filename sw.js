@@ -1,4 +1,4 @@
-const CACHE_NAME = 'angel-memories-shell-v2';
+const CACHE_NAME = 'angel-memories-shell-v3';
 const APP_SHELL = [
   './',
   './index.html',
@@ -28,6 +28,8 @@ self.addEventListener('fetch', event => {
   const request = event.request;
   const url = new URL(request.url);
   if (request.method !== 'GET' || url.origin !== self.location.origin) return;
+  // Never cache downloadable APKs or other large download responses.
+  if (url.pathname.startsWith('/download/')) return;
 
   if (request.mode === 'navigate') {
     event.respondWith(
