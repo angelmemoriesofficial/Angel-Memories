@@ -9,6 +9,8 @@ on:
       - 'logo.png'
       - 'hero.png'
       - 'hero2.png'
+      - 'apk icon.png'
+      - 'manifest.webmanifest'
       - 'package.json'
       - 'capacitor.config.json'
       - 'scripts/**'
@@ -71,6 +73,8 @@ jobs:
         run: |
           npm run build:web
           npx cap add android
+          python -m pip install --disable-pip-version-check Pillow
+          python scripts/generate-android-icons.py
           npx cap sync android
 
       - name: Build debug APK
