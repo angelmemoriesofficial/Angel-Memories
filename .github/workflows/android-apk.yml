@@ -129,7 +129,7 @@ jobs:
           tree.write(manifest, encoding="utf-8", xml_declaration=True)
           # Add a native Android DownloadManager bridge so APK downloads are saved
           # directly to the public Downloads folder instead of relying on WebView downloads.
-          (package_dir / "ApkDownloaderPlugin.java").write_text(f"""package {app_id};
+          (package_dir / "ApkDownloaderPlugin.java").write_text("""package __APP_ID__;
 
           import android.app.DownloadManager;
           import android.content.Context;
@@ -183,8 +183,8 @@ jobs:
                   }
               }
           }
-          """)
-          (package_dir / "MainActivity.java").write_text(f"""package {app_id};
+          """.replace("__APP_ID__", app_id))
+          (package_dir / "MainActivity.java").write_text("""package __APP_ID__;
 
           import android.os.Bundle;
           import com.getcapacitor.BridgeActivity;
@@ -196,7 +196,7 @@ jobs:
                   super.onCreate(savedInstanceState);
               }
           }
-          """)
+          """.replace("__APP_ID__", app_id))
           print("Installed Google OAuth callback and native APK DownloadManager plugin.")
           PY
           npx cap sync android
