@@ -672,7 +672,7 @@ function setupOfficialApkDownload(){
   link.addEventListener('click',async event=>{
    if(!window.Capacitor?.isNativePlatform?.())return;
    event.preventDefault();
-   const url=new URL('/download/Angel-Memories.apk',window.location.origin).href;
+   const url='https://angel-memories-eight.vercel.app/download/Angel-Memories.apk';
    try{
     if(!window.AMApkDownloader?.download)throw new Error('Native Download Manager প্রস্তুত নয়।');
     const result=await window.AMApkDownloader.download({url});
