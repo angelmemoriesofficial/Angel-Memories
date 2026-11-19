@@ -675,14 +675,21 @@ function setupOfficialApkDownload(){
    const url='https://angel-memories-eight.vercel.app/download/Angel-Memories.apk';
    const status=document.getElementById('homeShareMessage');
    try{
+    const downloader=window.Capacitor?.Plugins?.ApkDownloader;
+    if(downloader?.download){
+     const result=await downloader.download({url});
+     console.info('Angel Memories APK queued in Android Downloads:',result?.downloadId);
+     if(status)status.textContent='Angel Memories APK ডাউনলোড শুরু হয়েছে। Downloads ফোল্ডারে পাবেন।';
+     return;
+    }
     const browser=window.Capacitor?.Plugins?.Browser;
     if(browser?.open){
-     await browser.open({url,presentationStyle:'popover'});
+     await browser.open({url});
     }else{
      const opened=window.open(url,'_system');
      if(!opened)window.location.href=url;
     }
-    if(status)status.textContent='অফিশিয়াল APK ডাউনলোড পেজ খোলা হয়েছে। ডাউনলোড সম্পন্ন হলে Downloads ফোল্ডারে পাবেন।';
+    if(status)status.textContent='অফিশিয়াল APK ডাউনলোড পেজ খোলা হয়েছে।';
    }catch(error){
     console.warn('External APK download open failed:',error);
     try{
