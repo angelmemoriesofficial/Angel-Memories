@@ -663,7 +663,7 @@ refreshSession();
 setupNativeAuthDeepLinks().catch(error=>console.warn('Native auth deep link setup:',error));
 
 // Native Android WebView does not reliably honor the HTML download attribute.
-// Open the first-party APK URL in the system browser so Android can save it to Downloads.
+// Open the APK attachment in Android's external browser/download handler.
 function setupOfficialApkDownload(){
  const links=document.querySelectorAll('a.download-apk, #downloadApkHeader');
  links.forEach(link=>{
@@ -673,21 +673,24 @@ function setupOfficialApkDownload(){
    if(!window.Capacitor?.isNativePlatform?.())return;
    event.preventDefault();
    const url='https://angel-memories-eight.vercel.app/download/Angel-Memories.apk';
+   const status=document.getElementById('homeShareMessage');
    try{
-    if(!window.AMApkDownloader?.download)throw new Error('Native Download Manager প্রস্তুত নয়।');
-    const result=await window.AMApkDownloader.download({url});
-    const message='Angel Memories APK ডাউনলোড শুরু হয়েছে। Downloads ফোল্ডারে পাবেন।';
-    const status=document.getElementById('homeShareMessage');
-    if(status)status.textContent=message;
-    else alert(message);
-    console.info('Angel Memories APK download queued:',result?.downloadId);
+    const browser=window.Capacitor?.Plugins?.Browser;
+    if(browser?.open){
+     await browser.open({url,presentationStyle:'popover'});
+    }else{
+     const opened=window.open(url,'_system');
+     if(!opened)window.location.href=url;
+    }
+    if(status)status.textContent='অফিশিয়াল APK ডাউনলোড পেজ খোলা হয়েছে। ডাউনলোড সম্পন্ন হলে Downloads ফোল্ডারে পাবেন।';
    }catch(error){
-    console.warn('Native Download Manager failed; opening browser fallback:',error);
+    console.warn('External APK download open failed:',error);
     try{
-     if(!window.AMBrowser)throw error;
-     await window.AMBrowser.open({url});
+     const opened=window.open(url,'_system');
+     if(!opened)window.location.href=url;
+     if(status)status.textContent='APK ডাউনলোড পেজ খোলা হচ্ছে...';
     }catch(fallbackError){
-     console.warn('Browser download fallback failed:',fallbackError);
+     console.warn('APK download fallback failed:',fallbackError);
      window.location.href=url;
     }
    }
