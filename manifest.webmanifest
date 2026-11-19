@@ -1,0 +1,21 @@
+{
+  "id": "./",
+  "name": "Angel Memories",
+  "short_name": "Angel Memories",
+  "description": "Your Memories • Our Care — Private Cloud Gallery",
+  "lang": "bn",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#061535",
+  "theme_color": "#061535",
+  "icons": [
+    {
+      "src": "./logo.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
