@@ -54,7 +54,9 @@ jobs:
             exit 1
           fi
           echo "$(dirname "$SDKMANAGER")" >> "$GITHUB_PATH"
+          set +o pipefail
           yes | bash "$SDKMANAGER" --licenses
+          set -o pipefail
 
       - name: Install Android SDK packages
         shell: bash
