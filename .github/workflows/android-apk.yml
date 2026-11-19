@@ -54,11 +54,13 @@ jobs:
             exit 1
           fi
           echo "$(dirname "$SDKMANAGER")" >> "$GITHUB_PATH"
-          chmod +x "$SDKMANAGER"
-          yes | "$SDKMANAGER" --licenses
+          yes | bash "$SDKMANAGER" --licenses
 
       - name: Install Android SDK packages
-        run: sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0"
+        shell: bash
+        run: |
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | head -n 1)"
+          bash "$SDKMANAGER" "platform-tools" "platforms;android-36" "build-tools;36.0.0"
 
       - name: Install app dependencies
         run: npm install --no-audit --no-fund
