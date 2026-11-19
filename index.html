@@ -371,7 +371,8 @@ async function saveProfile(){
    if(cleanupError)msg.textContent+=' তবে পুরোনো Profile Photo পরিষ্কার করা যায়নি; Admin সহায়তা প্রয়োজন।';
   }
  }catch(e){
-  if(uploadedAvatar&&!profileSaved){const {error:cleanupError}=await sb.storage.from('angel-memories').remove([uploadedAvatar]);msg.textContent=(e.message||'Profile সংরক্ষণ হয়নি।')+(cleanupError?' | নতুন ছবি পরিষ্কার করা যায়নি।':'');}
+  if(profileSaved)msg.textContent='Profile সংরক্ষণ হয়েছে, তবে Profile Photo রিফ্রেশ করতে সমস্যা হয়েছে। আবার Profile খুলুন।';
+  else if(uploadedAvatar){const {error:cleanupError}=await sb.storage.from('angel-memories').remove([uploadedAvatar]);msg.textContent=(e.message||'Profile সংরক্ষণ হয়নি।')+(cleanupError?' | নতুন ছবি পরিষ্কার করা যায়নি।':'');}
   else msg.textContent=e.message||'Profile সংরক্ষণ হয়নি। আবার চেষ্টা করুন।';
  }finally{if(button)button.disabled=false;}
 }
