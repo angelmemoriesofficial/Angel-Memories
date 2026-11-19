@@ -95,8 +95,8 @@ jobs:
           # Keep upgrades compatible with the previously released Android package.
           gradle = Path("android/app/build.gradle")
           gradle_text = gradle.read_text()
-          gradle_text, code_count = re.subn(r"(?m)^(\\s*versionCode\\s+)\\d+", r"\\g<1>12", gradle_text)
-          gradle_text, name_count = re.subn(r"(?m)^(\\s*versionName\\s+)[\\\"'][^\\\"']+[\\\"']", r'\\g<1>"1.0.12"', gradle_text)
+          gradle_text, code_count = re.subn(r"(?m)^(\s*versionCode\s+)\d+", r"\g<1>12", gradle_text)
+          gradle_text, name_count = re.subn(r'''(?m)^(\s*versionName\s+)["'][^"']+["']''', r'\g<1>"1.0.12"', gradle_text)
           if code_count != 1 or name_count != 1:
               raise SystemExit("Could not safely set Android versionCode/versionName")
           gradle.write_text(gradle_text)
