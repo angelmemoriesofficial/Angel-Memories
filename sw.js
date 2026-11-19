@@ -1,4 +1,4 @@
-const CACHE_NAME = 'angel-memories-shell-v3';
+const CACHE_NAME = 'angel-memories-shell-v4';
 const APP_SHELL = [
   './',
   './index.html',
