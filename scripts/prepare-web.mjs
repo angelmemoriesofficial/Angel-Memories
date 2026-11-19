@@ -1,6 +1,6 @@
 import { mkdir, copyFile } from 'node:fs/promises';
 
-const files = ['index.html', 'logo.png', 'hero.png', 'hero2.png'];
+const files = ['index.html', 'logo.png', 'hero.png', 'hero2.png', 'apk icon.png', 'manifest.webmanifest'];
 await mkdir('www', { recursive: true });
 for (const file of files) {
   await copyFile(file, `www/${file}`);
