@@ -24,7 +24,7 @@ permissions:
   contents: write
 
 jobs:
-  build-debug-apk:
+  build-android-apk:
     name: Build installable Android APK
     runs-on: ubuntu-latest
     timeout-minutes: 35
@@ -201,15 +201,85 @@ jobs:
           PY
           npx cap sync android
 
-      - name: Build debug APK
-        working-directory: android
-        run: ./gradlew assembleDebug --no-daemon
+      # If the original release key is later supplied through GitHub Actions
+      # Secrets, produce a properly signed release APK. Never store key material
+      # in the repository. Without all four secrets, retain the debug build path.
+      - name: Configure release signing when key is available
+        shell: bash
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          provided=0
+          for value in "$ANDROID_KEYSTORE_BASE64" "$ANDROID_KEYSTORE_PASSWORD" "$ANDROID_KEY_ALIAS" "$ANDROID_KEY_PASSWORD"; do
+            if [ -n "$value" ]; then provided=$((provided + 1)); fi
+          done
+          if [ "$provided" -eq 0 ]; then
+            echo "APK_BUILD_VARIANT=debug" >> "$GITHUB_ENV"
+            echo "No release signing secrets configured; using a debug-signed APK."
+            exit 0
+          fi
+          if [ "$provided" -ne 4 ]; then
+            echo "Release signing secrets are incomplete. Configure all four before building."
+            exit 1
+          fi
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$GITHUB_WORKSPACE/android/release-key.jks"
+          chmod 600 "$GITHUB_WORKSPACE/android/release-key.jks"
+          export ANDROID_KEYSTORE_PATH="$GITHUB_WORKSPACE/android/release-key.jks"
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          gradle = Path("android/app/build.gradle")
+          source = gradle.read_text()
+          signing = """    signingConfigs {
+                  release {
+                      storeFile file(System.getenv("ANDROID_KEYSTORE_PATH"))
+                      storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                      keyAlias System.getenv("ANDROID_KEY_ALIAS")
+                      keyPassword System.getenv("ANDROID_KEY_PASSWORD")
+                  }
+              }
+
+          """
+          if "signingConfigs {" in source:
+              raise SystemExit("Unexpected existing signingConfigs block; refusing to overwrite it.")
+          source, count = re.subn(r"(?m)^(\s*)buildTypes\s*\{", lambda m: m.group(1) + "buildTypes {", source, count=1)
+          if count != 1:
+              raise SystemExit("Could not locate Android buildTypes block.")
+          source = re.sub(r"(?m)^(\s*)buildTypes\s*\{", signing + r"\1buildTypes {", source, count=1)
+          pattern = r"(buildTypes\s*\{\s*release\s*\{)"
+          source, count = re.subn(pattern, r"\1\n            signingConfig signingConfigs.release", source, count=1)
+          if count != 1:
+              raise SystemExit("Could not configure the release build type.")
+          gradle.write_text(source)
+          PY
+          echo "ANDROID_KEYSTORE_PATH=$ANDROID_KEYSTORE_PATH" >> "$GITHUB_ENV"
+          echo "ANDROID_KEYSTORE_PASSWORD=$ANDROID_KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
+          echo "ANDROID_KEY_ALIAS=$ANDROID_KEY_ALIAS" >> "$GITHUB_ENV"
+          echo "ANDROID_KEY_PASSWORD=$ANDROID_KEY_PASSWORD" >> "$GITHUB_ENV"
+          echo "APK_BUILD_VARIANT=release" >> "$GITHUB_ENV"
+
+      - name: Build signed release APK or debug fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          if [ "$APK_BUILD_VARIANT" = "release" ]; then
+            (cd android && ./gradlew assembleRelease --no-daemon)
+            cp android/app/build/outputs/apk/release/app-release.apk dist/Angel-Memories.apk
+          else
+            (cd android && ./gradlew assembleDebug --no-daemon)
+            cp android/app/build/outputs/apk/debug/app-debug.apk dist/Angel-Memories.apk
+          fi
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: angel-memories-android-debug
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: angel-memories-android-apk
+          path: dist/Angel-Memories.apk
           if-no-files-found: error
           retention-days: 30
 
@@ -217,7 +287,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p download
-          cp android/app/build/outputs/apk/debug/app-debug.apk download/Angel-Memories.apk
+          cp dist/Angel-Memories.apk download/Angel-Memories.apk
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add download/Angel-Memories.apk
@@ -228,7 +298,7 @@ jobs:
           fi
 
       - name: Prepare official APK release filename
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk Angel-Memories.apk
+        run: cp dist/Angel-Memories.apk Angel-Memories.apk
 
       - name: Publish official APK download
         uses: softprops/action-gh-release@v2
