@@ -89,6 +89,19 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+      - name: Publish APK as a first-party website download
+        shell: bash
+        run: |
+          mkdir -p download
+          cp android/app/build/outputs/apk/debug/app-debug.apk download/Angel-Memories.apk
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add download/Angel-Memories.apk
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish latest APK for direct website download"
+            git push
+          fi
+
       - name: Prepare official APK release filename
         run: cp android/app/build/outputs/apk/debug/app-debug.apk Angel-Memories.apk
 
