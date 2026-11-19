@@ -675,7 +675,7 @@ function setupOfficialApkDownload(){
    const url='https://angel-memories-mdamranhosain75-wq.vercel.app/download/Angel-Memories.apk';
    const status=document.getElementById('homeShareMessage');
    try{
-    const downloader=window.Capacitor?.Plugins?.ApkDownloader;
+    const downloader=window.AMApkDownloader;
     if(downloader?.download){
      const result=await downloader.download({url});
      console.info('Angel Memories APK queued in Android Downloads:',result?.downloadId);
