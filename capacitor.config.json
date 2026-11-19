@@ -1,0 +1,9 @@
+{
+  "appId": "com.angelmemories.app",
+  "appName": "Angel Memories",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "android": {
+    "allowMixedContent": false
+  }
+}
