@@ -1,6 +1,6 @@
 {
   "name": "angel-memories",
-  "version": "1.0.0",
+  "version": "1.0.14",
   "private": true,
   "description": "Angel Memories Android app and installable web app",
   "scripts": {
