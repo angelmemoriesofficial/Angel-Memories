@@ -40,3 +40,36 @@ adaptive = '''<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/a
 for name in ("ic_launcher.xml", "ic_launcher_round.xml"):
     (ROOT / "mipmap-anydpi-v26" / name).write_text(adaptive, encoding="utf-8")
 print("Generated Angel Memories launcher icons for all Android densities.")
+
+# Register the OAuth callback URL so Android returns to the installed app.
+import xml.etree.ElementTree as ET
+
+manifest_path = Path("android/app/src/main/AndroidManifest.xml")
+if manifest_path.exists():
+    android_ns = "{http://schemas.android.com/apk/res/android}"
+    ET.register_namespace("android", "http://schemas.android.com/apk/res/android")
+    tree = ET.parse(manifest_path)
+    root = tree.getroot()
+    application = root.find("application")
+    if application is None:
+        raise SystemExit("Android manifest has no application element")
+    activity = next((node for node in application.findall("activity")
+                     if node.get(android_ns + "name", "").endswith("MainActivity")), None)
+    if activity is None:
+        raise SystemExit("Capacitor MainActivity was not found in Android manifest")
+    existing = False
+    for intent in activity.findall("intent-filter"):
+        data = intent.find("data")
+        if data is not None and data.get(android_ns + "scheme") == "com.angelmemories.app" and data.get(android_ns + "host") == "login-callback":
+            existing = True
+            break
+    if not existing:
+        intent = ET.SubElement(activity, "intent-filter")
+        ET.SubElement(intent, "action", {android_ns + "name": "android.intent.action.VIEW"})
+        ET.SubElement(intent, "category", {android_ns + "name": "android.intent.category.DEFAULT"})
+        ET.SubElement(intent, "category", {android_ns + "name": "android.intent.category.BROWSABLE"})
+        ET.SubElement(intent, "data", {android_ns + "scheme": "com.angelmemories.app", android_ns + "host": "login-callback"})
+    tree.write(manifest_path, encoding="utf-8", xml_declaration=True)
+    print("Registered com.angelmemories.app://login-callback deep link.")
+else:
+    raise SystemExit("Android manifest not found; cannot register OAuth callback")
