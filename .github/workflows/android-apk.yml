@@ -22,6 +22,9 @@ jobs:
     name: Build installable Android APK
     runs-on: ubuntu-latest
     timeout-minutes: 35
+    env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
     steps:
       - name: Check out official source
         uses: actions/checkout@v4
@@ -37,8 +40,22 @@ jobs:
           distribution: temurin
           java-version: '21'
 
-      - name: Accept Android SDK licenses
-        run: yes | sdkmanager --licenses
+      - name: Locate Android SDK manager and accept licenses
+        shell: bash
+        run: |
+          if [ ! -d "$ANDROID_HOME/cmdline-tools" ]; then
+            echo "Android SDK command-line tools directory not found: $ANDROID_HOME"
+            exit 1
+          fi
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | head -n 1)"
+          if [ -z "$SDKMANAGER" ]; then
+            echo "sdkmanager executable not found under $ANDROID_HOME/cmdline-tools"
+            find "$ANDROID_HOME/cmdline-tools" -maxdepth 4 -type f | head -n 30
+            exit 1
+          fi
+          echo "$(dirname "$SDKMANAGER")" >> "$GITHUB_PATH"
+          chmod +x "$SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses
 
       - name: Install Android SDK packages
         run: sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0"
