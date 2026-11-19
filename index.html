@@ -348,7 +348,7 @@ async function saveProfile(){
  if(photoFile&&(!photoFile.type||!photoFile.type.startsWith('image/'))){msg.textContent='শুধু ছবির ফাইল নির্বাচন করুন।';return;}
  if(photoFile&&photoFile.size>5*1024*1024){msg.textContent='ছবির সাইজ ৫ MB-এর কম হতে হবে।';return;}
  const oldAvatar=currentUser.user_metadata?.avatar_path||null;
- let avatarPath=oldAvatar,uploadedAvatar=null;
+ let avatarPath=oldAvatar,uploadedAvatar=null,profileSaved=false;
  if(button)button.disabled=true;
  msg.textContent='সংরক্ষণ হচ্ছে...';
  try{
@@ -361,6 +361,7 @@ async function saveProfile(){
   }
   const {data,error}=await sb.auth.updateUser({data:{display_name:name,phone,profile_details:details,avatar_path:avatarPath}});
   if(error)throw error;
+  profileSaved=true;
   currentUser=data.user||currentUser;
   photoInput.value='';
   await loadProfile();
@@ -370,7 +371,7 @@ async function saveProfile(){
    if(cleanupError)msg.textContent+=' তবে পুরোনো Profile Photo পরিষ্কার করা যায়নি; Admin সহায়তা প্রয়োজন।';
   }
  }catch(e){
-  if(uploadedAvatar){const {error:cleanupError}=await sb.storage.from('angel-memories').remove([uploadedAvatar]);msg.textContent=(e.message||'Profile সংরক্ষণ হয়নি।')+(cleanupError?' | নতুন ছবি পরিষ্কার করা যায়নি।':'');}
+  if(uploadedAvatar&&!profileSaved){const {error:cleanupError}=await sb.storage.from('angel-memories').remove([uploadedAvatar]);msg.textContent=(e.message||'Profile সংরক্ষণ হয়নি।')+(cleanupError?' | নতুন ছবি পরিষ্কার করা যায়নি।':'');}
   else msg.textContent=e.message||'Profile সংরক্ষণ হয়নি। আবার চেষ্টা করুন।';
  }finally{if(button)button.disabled=false;}
 }
