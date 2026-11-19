@@ -12,10 +12,10 @@
   "theme_color": "#061535",
   "icons": [
     {
-      "src": "./logo.png",
-      "sizes": "any",
+      "src": "./apk%20icon.png",
+      "sizes": "1536x1536",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ]
 }
