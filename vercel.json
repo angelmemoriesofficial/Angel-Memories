@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/download/Angel-Memories.apk",
+      "destination": "https://github.com/angelmemoriesofficial/Angel-Memories/releases/latest/download/Angel-Memories.apk"
+    }
+  ]
+}
