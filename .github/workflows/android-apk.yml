@@ -106,7 +106,79 @@ jobs:
                   android + "host": "login-callback"
               })
           tree.write(manifest, encoding="utf-8", xml_declaration=True)
-          print("Installed Google OAuth app callback intent filter.")
+          # Add a native Android DownloadManager bridge so APK downloads are saved
+          # directly to the public Downloads folder instead of relying on WebView downloads.
+          package_dir = Path("android/app/src/main/java/com/angelmemories/app")
+          package_dir.mkdir(parents=True, exist_ok=True)
+          (package_dir / "ApkDownloaderPlugin.java").write_text("""package com.angelmemories.app;
+
+          import android.app.DownloadManager;
+          import android.content.Context;
+          import android.net.Uri;
+          import android.os.Environment;
+
+          import com.getcapacitor.JSObject;
+          import com.getcapacitor.Plugin;
+          import com.getcapacitor.PluginCall;
+          import com.getcapacitor.PluginMethod;
+          import com.getcapacitor.annotation.CapacitorPlugin;
+
+          @CapacitorPlugin(name = "ApkDownloader")
+          public class ApkDownloaderPlugin extends Plugin {
+              @PluginMethod
+              public void download(PluginCall call) {
+                  String url = call.getString("url");
+                  if (url == null || !url.startsWith("https://")) {
+                      call.reject("A valid HTTPS download URL is required.");
+                      return;
+                  }
+
+                  DownloadManager manager = (DownloadManager) getContext()
+                      .getSystemService(Context.DOWNLOAD_SERVICE);
+                  if (manager == null) {
+                      call.reject("Android Download Manager is unavailable.");
+                      return;
+                  }
+
+                  try {
+                      DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+                      request.setTitle("Angel Memories APK");
+                      request.setDescription("Downloading the official Angel Memories app");
+                      request.setMimeType("application/vnd.android.package-archive");
+                      request.setNotificationVisibility(
+                          DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED
+                      );
+                      request.setDestinationInExternalPublicDir(
+                          Environment.DIRECTORY_DOWNLOADS,
+                          "Angel-Memories.apk"
+                      );
+                      long downloadId = manager.enqueue(request);
+
+                      JSObject result = new JSObject();
+                      result.put("downloadId", downloadId);
+                      result.put("fileName", "Angel-Memories.apk");
+                      result.put("folder", "Downloads");
+                      call.resolve(result);
+                  } catch (Exception error) {
+                      call.reject("Could not start APK download: " + error.getMessage());
+                  }
+              }
+          }
+          """)
+          (package_dir / "MainActivity.java").write_text("""package com.angelmemories.app;
+
+          import android.os.Bundle;
+          import com.getcapacitor.BridgeActivity;
+
+          public class MainActivity extends BridgeActivity {
+              @Override
+              public void onCreate(Bundle savedInstanceState) {
+                  registerPlugin(ApkDownloaderPlugin.class);
+                  super.onCreate(savedInstanceState);
+              }
+          }
+          """)
+          print("Installed Google OAuth callback and native APK DownloadManager plugin.")
           PY
           npx cap sync android
 
