@@ -82,7 +82,24 @@ jobs:
           python scripts/generate-android-icons.py
           python - <<'PY'
           from pathlib import Path
+          import json
+          import re
           import xml.etree.ElementTree as ET
+
+          config = json.loads(Path("capacitor.config.json").read_text())
+          app_id = config["appId"]
+          package_path = Path(*app_id.split("."))
+          package_dir = Path("android/app/src/main/java") / package_path
+          package_dir.mkdir(parents=True, exist_ok=True)
+
+          # Keep upgrades compatible with the previously released Android package.
+          gradle = Path("android/app/build.gradle")
+          gradle_text = gradle.read_text()
+          gradle_text, code_count = re.subn(r"(?m)^(\\s*versionCode\\s+)\\d+", r"\\g<1>12", gradle_text)
+          gradle_text, name_count = re.subn(r"(?m)^(\\s*versionName\\s+)[\\\"'][^\\\"']+[\\\"']", r'\\g<1>"1.0.12"', gradle_text)
+          if code_count != 1 or name_count != 1:
+              raise SystemExit("Could not safely set Android versionCode/versionName")
+          gradle.write_text(gradle_text)
 
           manifest = Path("android/app/src/main/AndroidManifest.xml")
           ET.register_namespace("android", "http://schemas.android.com/apk/res/android")
@@ -112,9 +129,7 @@ jobs:
           tree.write(manifest, encoding="utf-8", xml_declaration=True)
           # Add a native Android DownloadManager bridge so APK downloads are saved
           # directly to the public Downloads folder instead of relying on WebView downloads.
-          package_dir = Path("android/app/src/main/java/com/angelmemories/app")
-          package_dir.mkdir(parents=True, exist_ok=True)
-          (package_dir / "ApkDownloaderPlugin.java").write_text("""package com.angelmemories.app;
+          (package_dir / "ApkDownloaderPlugin.java").write_text(f"""package {app_id};
 
           import android.app.DownloadManager;
           import android.content.Context;
@@ -169,7 +184,7 @@ jobs:
               }
           }
           """)
-          (package_dir / "MainActivity.java").write_text("""package com.angelmemories.app;
+          (package_dir / "MainActivity.java").write_text(f"""package {app_id};
 
           import android.os.Bundle;
           import com.getcapacitor.BridgeActivity;
