@@ -70,11 +70,44 @@ jobs:
         run: npm install --no-audit --no-fund
 
       - name: Prepare web app and create Android project
+        shell: bash
         run: |
           npm run build:web
           npx cap add android
           python -m pip install --disable-pip-version-check Pillow
           python scripts/generate-android-icons.py
+          python - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+          ET.register_namespace("android", "http://schemas.android.com/apk/res/android")
+          android = "{http://schemas.android.com/apk/res/android}"
+          tree = ET.parse(manifest)
+          root = tree.getroot()
+          activity = next(
+              (node for node in root.findall(".//activity")
+               if node.get(android + "name", "").endswith("MainActivity")),
+              None
+          )
+          if activity is None:
+              raise SystemExit("MainActivity not found in generated Android manifest")
+          for item in activity.findall("intent-filter"):
+              data = item.find("data")
+              if data is not None and data.get(android + "scheme") == "com.angelmemories.app":
+                  break
+          else:
+              intent = ET.SubElement(activity, "intent-filter")
+              ET.SubElement(intent, "action", {android + "name": "android.intent.action.VIEW"})
+              ET.SubElement(intent, "category", {android + "name": "android.intent.category.DEFAULT"})
+              ET.SubElement(intent, "category", {android + "name": "android.intent.category.BROWSABLE"})
+              ET.SubElement(intent, "data", {
+                  android + "scheme": "com.angelmemories.app",
+                  android + "host": "login-callback"
+              })
+          tree.write(manifest, encoding="utf-8", xml_declaration=True)
+          print("Installed Google OAuth app callback intent filter.")
+          PY
           npx cap sync android
 
       - name: Build debug APK
