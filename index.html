@@ -6,6 +6,10 @@
 <meta name="theme-color" content="#061535">
 <title>Angel Memories | Private Cloud Gallery</title>
 <link rel="icon" type="image/png" href="logo.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="logo.png">
 <style>
 :root{--navy:#061535;--gold:#ffd45c;--white:#fff}
 *{box-sizing:border-box}
@@ -594,6 +598,7 @@ sb.auth.onAuthStateChange(()=>{setTimeout(()=>refreshSession(),0)});
 const initialPage=location.hash.replace('#','');renderPage(initialPage||'home');if(!history.state?.angelMemories){history.replaceState({angelMemories:true,base:true,page:currentPage},'','#'+currentPage);}
 refreshSession();
 openSharedFile();
+if('serviceWorker' in navigator && location.protocol==='https:'){window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').catch(error=>console.warn('Offline support unavailable:',error));});}
 if(new URLSearchParams(location.search).has('share')){document.querySelectorAll('.page-section').forEach(el=>el.classList.remove('active-page'));document.getElementById('sharedFile').classList.add('active-page');}
 
 function getWebsiteShareUrl(){return window.location.origin+window.location.pathname;}
