@@ -1,6 +1,12 @@
 # Angel Memories Android APK
 
-The Android project is generated from the official static website using Capacitor 8.
+The Android app is generated from the official Angel Memories website using Capacitor 8.
+
+## Official download
+
+The latest APK is published at:
+
+https://angel-memories-official.vercel.app/download/Angel-Memories.apk
 
 ## Automated build
 
@@ -8,10 +14,9 @@ The Android project is generated from the official static website using Capacito
 2. Select **Build Angel Memories Android APK**.
 3. Choose **Run workflow** on the `main` branch.
 4. Wait for the workflow to finish successfully.
-5. Open the completed run and download the `angel-memories-android-debug` artifact.
-6. Extract the ZIP to get `app-debug.apk`.
+5. Download the APK artifact or use the official website download above.
 
-Every relevant change to the website or Android build configuration on `main` also triggers an APK build.
+Every relevant website or Android build change on `main` triggers a fresh APK build.
 
 ## Local build requirements
 
@@ -32,9 +37,12 @@ cd android
 
 The debug APK is generated at `android/app/build/outputs/apk/debug/app-debug.apk`.
 
-## App identity
+## App identity and upgrade compatibility
 
 - Display name: Angel Memories
-- Android application ID: `com.angelmemories.app`
+- Existing Android application ID: `bd.littleangel.gallery`
+- OAuth callback URI scheme: `com.angelmemories.app`
 
-This workflow creates a debug APK for installation/testing. A signed release APK or Google Play App Bundle requires a separately managed signing key; never commit that key or its passwords to the repository.
+The existing application ID is intentionally retained so that previously installed Android builds keep the same package identity. Do not change it unless a separate new Android app is intended.
+
+This workflow can use a debug signing key when release-signing secrets are not configured. A properly signed upgrade requires the original release keystore; never commit signing keys or passwords to the repository.
