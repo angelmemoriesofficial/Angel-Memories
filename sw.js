@@ -1,8 +1,9 @@
-const CACHE_NAME = 'angel-memories-shell-v5';
+const CACHE_NAME = 'angel-memories-shell-v6';
 const APP_SHELL = [
   './',
   './index.html',
   './logo.png',
+  './apk%20icon.png',
   './hero.png',
   './hero2.png',
   './manifest.webmanifest'
