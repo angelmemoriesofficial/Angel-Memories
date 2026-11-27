@@ -913,7 +913,8 @@ async function loadBackupSummary(){
 function chooseVaultFiles(){
  if(!currentUser){openLogin();return;}
  const pin=document.getElementById('vaultPin').value;
- if(!/^[0-9]{6,12}$/.test(pin)){document.getElementById('vaultStatus').textContent='৬–১২ সংখ্যার PIN লিখুন।';return;}
+ if(!/^[0-9]{8,12}$/.test(pin)){document.getElementById('vaultStatus').textContent='৮–১২ সংখ্যার PIN লিখুন।';return;}
+ if(pin!==document.getElementById('vaultPinConfirm').value){document.getElementById('vaultStatus').textContent='দুইবার লেখা PIN মিলছে না।';return;}
  document.getElementById('vaultFileInput').click();
 }
 function bytesToBase64(bytes){let binary='';for(let i=0;i<bytes.length;i++)binary+=String.fromCharCode(bytes[i]);return btoa(binary);}
@@ -926,7 +927,8 @@ async function uploadVaultFiles(){
  const input=document.getElementById('vaultFileInput'),status=document.getElementById('vaultStatus'),button=document.getElementById('vaultChooseBtn');
  const pin=document.getElementById('vaultPin').value,files=Array.from(input.files||[]);
  if(!currentUser){input.value='';openLogin();return;}
- if(!/^[0-9]{6,12}$/.test(pin)){status.textContent='৬–১২ সংখ্যার PIN লিখুন।';input.value='';return;}
+ if(!/^[0-9]{8,12}$/.test(pin)){status.textContent='৮–১২ সংখ্যার PIN লিখুন।';input.value='';return;}
+ if(pin!==document.getElementById('vaultPinConfirm').value){status.textContent='দুইবার লেখা PIN মিলছে না।';input.value='';return;}
  if(!files.length)return;
  button.disabled=true;let saved=0,failed=0;
  try{
@@ -966,7 +968,7 @@ async function loadVaultItems(){
  }
 }
 async function decryptVaultItem(item,button){
- const pin=prompt('এই ফাইলটি আনলক করতে আপনার ৬–১২ সংখ্যার PIN লিখুন:');
+ const pin=prompt('এই ফাইলটি আনলক করতে আপনার ৮–১২ সংখ্যার PIN লিখুন:');
  if(pin===null)return;
  if(!/^[0-9]{8,12}$/.test(pin)){alert('সঠিক ৮–১২ সংখ্যার PIN দিন।');return;}
  button.disabled=true;
