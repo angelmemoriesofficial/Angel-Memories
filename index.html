@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#081b3e">
+<meta name="theme-color" content="#090d18">
 <title>Angel Memories | Private Cloud Gallery</title>
 <link rel="icon" type="image/png" href="apk%20icon.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -503,48 +503,87 @@ input,select,textarea{background:rgba(224,236,252,.86)!important}
 </style>
 
 <style id="angel-blue-glass-enhancement">
-/* Angel Memories — softer blue glass with balanced gold */
+/* Angel Memories — Luxury Obsidian, Midnight Navy & Champagne Gold */
+:root{--navy:#090d18;--gold:#e8c477;--white:#f7f3e9}
 body{
-  background:
-    radial-gradient(ellipse at 12% 8%,rgba(87,112,145,.12),transparent 38%),
-    radial-gradient(ellipse at 88% 22%,rgba(111,126,148,.10),transparent 40%),
-    linear-gradient(135deg,#edf0f4 0%,#e1e6ed 48%,#f2f1ed 100%) !important;
-}
-header,.header,.navbar,.nav-bar,.topbar,
-.panel,.card,.glass,.modal-content,.stat-card,.gallery-card,
-.upload-card,.dashboard-card,.settings-card,.member-card{
-  background:linear-gradient(145deg,rgba(255,255,255,.68),rgba(225,232,241,.48) 55%,rgba(255,255,255,.58)) !important;
-  border:1px solid rgba(190,160,99,.48) !important;
-  box-shadow:0 12px 34px rgba(38,52,72,.09),inset 0 1px 0 rgba(255,255,255,.72) !important;
-  backdrop-filter:blur(20px) saturate(125%) !important;
-  -webkit-backdrop-filter:blur(20px) saturate(125%) !important;
+ color:#f7f3e9 !important;
+ background:
+  radial-gradient(ellipse at 15% 0%,rgba(191,151,76,.13),transparent 34%),
+  radial-gradient(ellipse at 90% 18%,rgba(31,48,75,.34),transparent 38%),
+  linear-gradient(135deg,#080b12 0%,#101827 48%,#080b12 100%) !important;
 }
 header,.header,.navbar,.nav-bar,.topbar{
-  background:linear-gradient(110deg,rgba(43,58,78,.94),rgba(69,84,105,.90)) !important;
-  border-color:rgba(218,184,105,.58) !important;
-  color:#fff !important;
+ background:linear-gradient(115deg,rgba(8,12,21,.97),rgba(20,29,43,.96),rgba(9,13,22,.97)) !important;
+ border-bottom:1px solid rgba(226,190,117,.72) !important;
+ color:#fbf5e8 !important;
+ box-shadow:0 12px 35px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.06) !important;
+ backdrop-filter:blur(22px) saturate(125%) !important;
+ -webkit-backdrop-filter:blur(22px) saturate(125%) !important;
 }
-.hero,.hero-section{
-  background:linear-gradient(125deg,rgba(55,70,91,.92),rgba(83,101,125,.82),rgba(126,137,151,.66)) !important;
-  color:#fff !important;
-  border:1px solid rgba(224,190,112,.62) !important;
+.brand strong, h2.section-title,.settings-card h3,.home-share h2,.contact-brand h2{
+ color:#e8c477 !important;
+ text-shadow:0 0 18px rgba(232,196,119,.17);
 }
-button,.btn,.primary-btn{
-  background:linear-gradient(135deg,#45566e,#687991) !important;
-  border:1px solid rgba(205,169,94,.72) !important;
-  box-shadow:0 6px 18px rgba(38,52,72,.14) !important;
+nav a{color:#eee8dc !important}
+nav a:hover,nav a.active{color:#f1cf86 !important;border-bottom-color:#e8c477 !important}
+.hero,.hero-section,.hero.page-section.active-page{
+ background:
+  radial-gradient(ellipse at 50% 0%,rgba(221,180,103,.16),transparent 48%),
+  linear-gradient(145deg,#172235 0%,#0b111d 56%,#080b12 100%) !important;
+ color:#fff8eb !important;
+ border-color:rgba(232,196,119,.58) !important;
 }
-button:hover,.btn:hover,.primary-btn:hover{
-  background:linear-gradient(135deg,#35445a,#566981) !important;
+.hero-banner-image{
+ border:1px solid rgba(232,196,119,.82) !important;
+ box-shadow:0 0 0 4px rgba(232,196,119,.07),0 22px 55px rgba(0,0,0,.56),0 0 34px rgba(232,196,119,.13) !important;
 }
+section{color:#f3eee4}
+.subtitle,.about,.contact-intro{color:#c9c5bd !important}
+.panel,.card,.glass,.modal-content,.stat-card,.gallery-card,.upload-card,.dashboard-card,
+.settings-card,.member-card,.admin-tools,.modalbox,.feature,.home-share,.contact-card,
+.album-tile,.backup-panel,.vault-panel{
+ background:linear-gradient(145deg,rgba(31,41,57,.88),rgba(13,19,30,.94) 58%,rgba(25,31,42,.88)) !important;
+ color:#f6f0e5 !important;
+ border:1px solid rgba(205,169,101,.58) !important;
+ box-shadow:0 16px 42px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.055) !important;
+ backdrop-filter:blur(20px) saturate(125%) !important;
+ -webkit-backdrop-filter:blur(20px) saturate(125%) !important;
+}
+.feature:hover,.feature:focus-visible,.contact-item:hover{
+ border-color:#f0ce88 !important;
+ box-shadow:0 14px 34px rgba(0,0,0,.42),0 0 22px rgba(232,196,119,.13) !important;
+}
+button,.btn,.primary-btn,.home-share-buttons button{
+ background:linear-gradient(135deg,#f2d99d 0%,#d7b36a 52%,#a9823e 100%) !important;
+ color:#17130d !important;
+ border:1px solid #f5dfad !important;
+ box-shadow:0 7px 20px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.48) !important;
+}
+button:hover,.btn:hover,.primary-btn:hover,.home-share-buttons button:hover{
+ background:linear-gradient(135deg,#fae8bd,#e4c27d,#bd9650) !important;
+}
+button.danger,.danger{background:linear-gradient(135deg,#b94b53,#842b35) !important;color:#fff !important;border-color:#d98b8f !important}
 input,select,textarea{
-  background:rgba(255,255,255,.78) !important;
-  border:1px solid rgba(174,157,124,.46) !important;
-  color:#26364b !important;
+ background:rgba(8,13,22,.82) !important;
+ border:1px solid rgba(197,165,108,.58) !important;
+ color:#f7f1e7 !important;
 }
+input::placeholder,textarea::placeholder{color:#aaa69e !important}
 footer,.footer{
-  background:linear-gradient(120deg,rgba(39,51,68,.96),rgba(61,74,91,.92)) !important;
-  color:#f4f5f7 !important;
+ background:linear-gradient(120deg,#070a11,#141c29 60%,#090d16) !important;
+ color:#f4ead8 !important;border-top:1px solid rgba(232,196,119,.7) !important;
+}
+footer p,.contact-item small,.settings-card p,.settings-card li{color:#d1ccc2 !important}
+.contact-item{background:rgba(8,14,24,.78) !important;border-color:rgba(205,169,101,.42) !important}
+.contact-item b{color:#e8c477 !important}
+.empty{color:#c9c4ba !important}
+.actions.page-section.active-page{background:linear-gradient(180deg,#0a101b,#111b2b) !important}
+.profile-line,.admin-row{border-color:rgba(205,169,101,.3) !important}
+.photo-view{background:rgba(0,0,0,.94) !important}
+.photo-view img{border-color:#e8c477 !important}
+@media(prefers-reduced-motion:no-preference){
+ .panel,.card,.feature,.settings-card,.contact-item{transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+ .card:hover,.settings-card:hover{transform:translateY(-2px)}
 }
 </style>
 
