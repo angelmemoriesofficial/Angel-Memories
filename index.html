@@ -626,7 +626,8 @@ async function loadAdminFiles(){
  const {data:rows,error}=await sb.from('media_items').select('*').order('created_at',{ascending:false});
  if(error){host.textContent='তথ্য লোড হয়নি: '+error.message;summary.textContent='Admin file list unavailable';return}
  if(!rows?.length){summary.textContent='মোট ফাইল: ০';host.innerHTML='<p class="empty">এখনো কোনো ফাইল আপলোড হয়নি।</p>';return}
- const images=rows.filter(x=>x.content_type?.startsWith('image/')).length;
+ const isImageFile=x=>String(x.content_type||'').toLowerCase().startsWith('image/')||/\.(png|jpe?g|gif|webp|bmp|avif|heic)$/i.test(String(x.file_name||x.object_path||''));
+ const images=rows.filter(isImageFile).length;
  summary.textContent='মোট '+rows.length+'টি ফাইল • '+images+'টি ছবি • গ্যালারি ভিউ';
  const tasks=[];
  for(const item of rows){
@@ -654,7 +655,7 @@ async function loadAdminFiles(){
    await loadAdminFiles();await loadMyFiles();
   };
   actions.append(download,del);
-  if(item.content_type?.startsWith('image/')){
+  if(isImageFile(item)){
    const img=document.createElement('img');img.alt=item.file_name||'Photo';img.loading='lazy';
    img.onerror=()=>{img.remove();previewBox.textContent='⚠️ প্রিভিউ পাওয়া যায়নি';};
    img.onclick=()=>openPhotoView(img.src,item);
