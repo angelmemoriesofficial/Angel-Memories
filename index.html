@@ -275,6 +275,10 @@ nav a{font-size:clamp(14px,2vw,18px);white-space:nowrap;padding:9px 5px}
 
 
 /* Admin dashboard: visual gallery layout with large photo thumbnails. */
+/* Explicit preview visibility: guard against legacy row styles hiding thumbnails. */
+#adminFiles .admin-preview{display:grid!important;visibility:visible!important;opacity:1!important;flex:0 0 auto!important}
+#adminFiles .admin-preview img{visibility:visible!important;opacity:1!important;min-height:120px!important}
+
 #adminFiles{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(170px,1fr))!important;gap:14px!important;align-items:start}
 #adminFiles .admin-row{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;width:100%;min-width:0;margin:0!important;padding:10px!important;gap:9px!important;border:1px solid #526b96;border-radius:14px;background:linear-gradient(145deg,#10254c,#071832);overflow:hidden}
 #adminFiles .admin-preview{width:100%!important;height:auto!important;aspect-ratio:1/1!important;min-height:145px;display:grid;place-items:center;overflow:hidden;border:1px solid #d5ac48;border-radius:10px;background:#071a3b;color:#ffd45c;font-size:30px}
@@ -837,7 +841,7 @@ function setupOfficialApkDownload(){
 setupOfficialApkDownload();
 window.addEventListener('angelmemories-native-ready',setupOfficialApkDownload);
 openSharedFile();
-if('serviceWorker' in navigator && location.protocol==='https:'){window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').catch(error=>console.warn('Offline support unavailable:',error));});}
+if('serviceWorker' in navigator && location.protocol==='https:'){window.addEventListener('load',async()=>{try{const regs=await navigator.serviceWorker.getRegistrations();await Promise.all(regs.map(reg=>reg.unregister()));if('caches' in window){const keys=await caches.keys();await Promise.all(keys.filter(key=>key.startsWith('angel-memories-shell-')).map(key=>caches.delete(key)));}}catch(error){console.warn('App cache refresh:',error);}});}
 if(new URLSearchParams(location.search).has('share')){document.querySelectorAll('.page-section').forEach(el=>el.classList.remove('active-page'));document.getElementById('sharedFile').classList.add('active-page');}
 
 function getWebsiteShareUrl(){const host=window.location.hostname;const base=(!host||host==='localhost'||host==='127.0.0.1'||host.endsWith('.localhost'))?'https://angel-memories-eight.vercel.app':window.location.origin;return base+window.location.pathname;}
