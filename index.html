@@ -249,12 +249,26 @@ nav a{font-size:clamp(14px,2vw,18px);white-space:nowrap;padding:9px 5px}
  #downloadApkHeader.floating-apk-download{right:10px!important;bottom:12px!important;min-height:48px;padding:11px 15px;font-size:13px}
 }
 
+
+.album-create-panel{max-width:850px}
+.album-create-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.album-create-row input{min-width:min(100%,260px);flex:1}
+.album-grid{max-width:1100px;margin:22px auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.album-tile{padding:20px;background:linear-gradient(145deg,#16345f,#091b3b);border:1px solid #d5ac48;border-radius:16px;text-align:center;box-shadow:0 8px 20px #0003}
+.album-tile h3{color:#ffd45c;overflow-wrap:anywhere}
+.album-tile p{color:#dce5ff;font-size:13px}
+.album-tile button{margin:4px}
+.album-detail-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.album-photo-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:12px 0 22px}
+.album-photo-row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:12px;background:#071a3b;border:1px solid #526b96;border-radius:12px}
+.album-photo-row span{min-width:0;overflow-wrap:anywhere;flex:1}
+.album-photo-row button{padding:8px 12px;font-size:12px}
 </style>
 </head>
 <body>
 <header>
  <div class="brand"><img src="logo.png" alt="Angel Memories Logo"><div><strong>Angel Memories</strong><small>Private Cloud Gallery</small></div></div>
- <nav id="mainNav"><a href="#home" data-page="home" onclick="showPage('home')">Home</a><a href="#gallery" data-page="gallery" onclick="showPage('gallery')">Gallery</a><a href="#videos" data-page="videos" onclick="showPage('videos')">Videos</a><a href="#documents" data-page="documents" onclick="showPage('documents')">Documents</a><a href="#about" data-page="about" onclick="showPage('about')">About</a><a href="#contact" data-page="contact" onclick="showPage('contact')">Contact</a></nav>
+ <nav id="mainNav"><a href="#home" data-page="home" onclick="showPage('home')">Home</a><a href="#gallery" data-page="gallery" onclick="showPage('gallery')">Gallery</a><a href="#albums" data-page="albums" onclick="showPage('albums')">Albums</a><a href="#videos" data-page="videos" onclick="showPage('videos')">Videos</a><a href="#documents" data-page="documents" onclick="showPage('documents')">Documents</a><a href="#about" data-page="about" onclick="showPage('about')">About</a><a href="#contact" data-page="contact" onclick="showPage('contact')">Contact</a></nav>
  <div class="header-actions"><button id="backBtn" onclick="goBack()" title="আগের পেজে ফিরে যান">← Back</button><button id="profileBtn" onclick="openProfile()"><img id="profileBtnPhoto" src="logo.png" alt="" class="profile-btn-photo"><span>Profile</span></button><button id="adminBtn" style="display:none" onclick="showPage('adminDashboard')">🛡️ Admin</button><button id="settingsBtn" onclick="showPage('settings')">⚙️ Settings</button><button id="loginBtn" onclick="openLogin()">Login</button></div>
 </header>
 <a id="downloadApkHeader" class="floating-apk-download" href="/download/Angel-Memories.apk" download="Angel-Memories.apk" aria-label="Download official Angel Memories Android APK">⬇ APK ডাউনলোড</a>
@@ -276,6 +290,22 @@ nav a{font-size:clamp(14px,2vw,18px);white-space:nowrap;padding:9px 5px}
 <section class="home-share page-section active-page" data-page="home" aria-label="Share Angel Memories"><h2>💙 Share Angel Memories</h2><p>আপনার পরিবার ও বন্ধুদের সঙ্গে Angel Memories পরিচয় করিয়ে দিন।</p><div class="home-share-buttons"><a class="download-apk" href="/download/Angel-Memories.apk" download="Angel-Memories.apk" aria-label="Download official Angel Memories Android APK">📲 Official APK Download</a><button type="button" onclick="shareWebsite()">🔗 Link Share</button><button type="button" onclick="shareSocial('facebook')">ⓕ Facebook</button><button type="button" onclick="shareSocial('whatsapp')">🟢 WhatsApp</button><button type="button" onclick="shareSocial('imo')">💬 imo</button><button type="button" onclick="shareSocial('messenger')">🔵 Messenger</button><button type="button" onclick="shareSocial('telegram')">✈️ Telegram</button><button type="button" onclick="shareSocial('x')">𝕏 Share</button></div><p id="homeShareMessage" role="status" aria-live="polite"></p></section>
 <section class="page-section" data-page="upload" id="upload" style="display:none"><h2 class="section-title">☁ One Click Upload</h2><div class="panel"><p>একবার বাটনে চাপ দিয়ে ছবি, ভিডিও অথবা ডকুমেন্ট নির্বাচন করুন। নির্বাচন করলেই আপলোড শুরু হবে।</p><input type="file" id="fileInput" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt" hidden onchange="uploadFiles()"><button type="button" id="chooseUploadBtn" onclick="document.getElementById('fileInput').click()">☁ Choose Files & Upload</button><p id="status" role="status" aria-live="polite"></p></div></section>
 <section class="page-section" data-page="gallery" id="gallery"><h2 class="section-title">🔍 Search Memories</h2><p class="subtitle">আপনার অ্যাকাউন্টের ছবি, ভিডিও ও ডকুমেন্টের নাম লিখে খুঁজুন।</p><input id="search" type="search" placeholder="ছবি, ভিডিও বা ডকুমেন্টের নাম লিখুন..." oninput="searchMemories()" style="display:block;width:min(92%,560px);margin:16px auto"><p id="searchStatus" class="empty" role="status" aria-live="polite">খুঁজতে উপরের বক্সে নাম লিখুন।</p><div class="gallery" id="searchResults"></div><h3 class="section-title">📸 Photo Gallery</h3><div class="gallery" id="photos"><p class="empty">আপনার ছবিগুলো এখানে দেখা যাবে।</p></div></section>
+<section class="page-section" data-page="albums" id="albums">
+ <h2 class="section-title">🗂️ My Photo Albums</h2>
+ <p class="subtitle">নিজের ছবিগুলো আলাদা অ্যালবামে সাজিয়ে রাখুন। অ্যালবাম মুছলে ছবি ডিলিট হবে না।</p>
+ <div class="panel album-create-panel">
+  <h3 style="color:#ffd45c;margin-top:0">নতুন অ্যালবাম তৈরি করুন</h3>
+  <div class="album-create-row"><input id="newAlbumName" maxlength="80" placeholder="যেমন: Family, Travel, Ayat"><button type="button" onclick="createPhotoAlbum()">＋ Create Album</button></div>
+  <p id="albumStatus" role="status" aria-live="polite"></p>
+ </div>
+ <div id="albumList" class="album-grid"><p class="empty">Login করে আপনার অ্যালবাম দেখুন।</p></div>
+ <div id="albumDetail" class="panel" style="display:none;text-align:left">
+  <div class="album-detail-head"><h3 id="albumDetailTitle" style="color:#ffd45c;margin:0">Album</h3><button type="button" onclick="closeAlbumDetail()">← Albums</button></div>
+  <p id="albumDetailStatus" role="status"></p>
+  <h4>এই অ্যালবামের ছবি</h4><div id="albumPhotoList" class="album-photo-list"></div>
+  <h4>আপনার ছবি থেকে যোগ করুন</h4><div id="albumAvailablePhotos" class="album-photo-list"></div>
+ </div>
+</section>
 <section class="page-section" data-page="videos" id="videos"><h2 class="section-title">🎬 Video Gallery</h2><div class="gallery" id="videosList"><p class="empty">আপনার ভিডিওগুলো এখানে দেখা যাবে।</p></div></section>
 <section class="page-section" data-page="documents" id="documents"><h2 class="section-title">📁 Documents</h2><div class="gallery" id="documentsList"><p class="empty">আপনার ডকুমেন্ট এখানে দেখা যাবে।</p></div></section>
 <section class="page-section" data-page="adminDashboard" id="adminDashboard" style="display:none"><h2 class="section-title">🛡️ Admin Dashboard</h2><div class="admin-tools"><p id="adminSummary">Loading administration data...</p><div id="adminFiles"><p class="empty">ফাইল লোড হচ্ছে...</p></div></div></section>
@@ -360,7 +390,7 @@ let currentPage='home';
 let pageHistory=[];
 let activePhotoItem=null,photoZoom=1,galleryLoadToken=0;
 function openLogin(){document.getElementById('loginModal').style.display='flex';}
-function renderPage(page){if(page==='adminDashboard'&&currentRole!=='admin')page='home';currentPage=page;document.querySelectorAll('.page-section').forEach(el=>el.classList.toggle('active-page',el.dataset.page===page));document.querySelectorAll('#mainNav a').forEach(a=>a.classList.toggle('active',a.dataset.page===page));const back=document.getElementById('backBtn');if(back)back.disabled=pageHistory.length===0;window.scrollTo({top:0,behavior:'smooth'});if(page==='adminDashboard'&&currentUser&&currentRole==='admin')loadAdminFiles();if(page==='profile')loadProfile();if(page==='settings')loadSettings();}
+function renderPage(page){if(page==='adminDashboard'&&currentRole!=='admin')page='home';currentPage=page;document.querySelectorAll('.page-section').forEach(el=>el.classList.toggle('active-page',el.dataset.page===page));document.querySelectorAll('#mainNav a').forEach(a=>a.classList.toggle('active',a.dataset.page===page));const back=document.getElementById('backBtn');if(back)back.disabled=pageHistory.length===0;window.scrollTo({top:0,behavior:'smooth'});if(page==='adminDashboard'&&currentUser&&currentRole==='admin')loadAdminFiles();if(page==='profile')loadProfile();if(page==='settings')loadSettings();if(page==='albums')loadAlbums();}
 function showPage(page,fromBack=false){if(page==='adminDashboard'&&currentRole!=='admin')page='home';if(page===currentPage)return;if(!fromBack){pageHistory.push(currentPage);history.pushState({angelMemories:true,page},'','#'+page);}renderPage(page);}
 function goBack(){if(history.state?.angelMemories){history.back();return;}if(pageHistory.length){const previous=pageHistory.pop();renderPage(previous);}else if(currentPage!=='home'){renderPage('home');}else if(document.getElementById('photoView')?.classList.contains('open'))closePhotoView();}
 function closePhotoViewFromPop(){const modal=document.getElementById('photoView');if(modal?.classList.contains('open')){modal.classList.remove('open');document.getElementById('photoViewImage').src='';activePhotoItem=null;}}
@@ -732,6 +762,96 @@ function getWebsiteShareUrl(){const host=window.location.hostname;const base=(!h
 function getWebsiteShareText(){return 'Angel Memories — Your Memories • Our Care. আপনার ছবি, ভিডিও ও গুরুত্বপূর্ণ স্মৃতি যত্নে রাখুন।';}
 async function shareWebsite(){const url=getWebsiteShareUrl(),text=getWebsiteShareText(),msg=document.getElementById('homeShareMessage');if(navigator.share){try{await navigator.share({title:'Angel Memories',text,url});if(msg)msg.textContent='শেয়ার মেনু খোলা হয়েছে।';return;}catch(error){if(error?.name==='AbortError')return;}}try{await navigator.clipboard.writeText(url);if(msg)msg.textContent='ওয়েবসাইটের লিংক কপি হয়েছে। এখন যেখানে চান Paste করুন।';}catch(error){const field=document.createElement('textarea');field.value=url;field.style.position='fixed';field.style.opacity='0';document.body.appendChild(field);field.select();const copied=document.execCommand('copy');field.remove();if(msg)msg.textContent=copied?'ওয়েবসাইটের লিংক কপি হয়েছে।':'লিংক কপি করা যায়নি: '+url;}}
 function shareSocial(platform){const url=encodeURIComponent(getWebsiteShareUrl()),text=encodeURIComponent(getWebsiteShareText()),targets={imo:'https://imo.im/',messenger:'https://www.facebook.com/dialog/send?link='+url+'&app_id=87741124305&redirect_uri='+url,facebook:'https://www.facebook.com/sharer/sharer.php?u='+url,whatsapp:'https://wa.me/?text='+text+'%20'+url,telegram:'https://t.me/share/url?url='+url+'&text='+text,x:'https://twitter.com/intent/tweet?url='+url+'&text='+text};const target=targets[platform];if(!target)return;window.open(target,'_blank','noopener,noreferrer');const msg=document.getElementById('homeShareMessage');if(msg)msg.textContent='শেয়ার করার পেজ খোলা হয়েছে।';}
+
+/* Private Photo Albums — each album contains references to the user's existing files. */
+let activeAlbumId=null;
+async function loadAlbums(){
+ const host=document.getElementById('albumList'),status=document.getElementById('albumStatus'),detail=document.getElementById('albumDetail');
+ if(!host)return;
+ if(!currentUser){host.innerHTML='<p class="empty">অ্যালবাম ব্যবহার করতে Login করুন।</p>';if(status)status.textContent='';if(detail)detail.style.display='none';return;}
+ host.innerHTML='<p class="empty">অ্যালবাম লোড হচ্ছে...</p>';
+ const {data:albums,error}=await sb.from('albums').select('id,name,created_at').eq('user_id',currentUser.id).order('created_at',{ascending:false});
+ if(error){host.textContent='অ্যালবাম লোড হয়নি: '+error.message;return;}
+ host.replaceChildren();
+ if(!albums?.length){host.innerHTML='<p class="empty">এখনো কোনো অ্যালবাম তৈরি হয়নি। উপরে নাম লিখে তৈরি করুন।</p>';return;}
+ for(const album of albums){
+  const {count,error:countError}=await sb.from('album_media').select('*',{count:'exact',head:true}).eq('album_id',album.id);
+  const tile=document.createElement('article');tile.className='album-tile';
+  const icon=document.createElement('div');icon.textContent='📁';icon.style.fontSize='34px';
+  const title=document.createElement('h3');title.textContent=album.name;
+  const meta=document.createElement('p');meta.textContent=(countError?'—':String(count||0))+'টি ছবি';
+  const open=document.createElement('button');open.type='button';open.textContent='Open Album';open.onclick=()=>openPhotoAlbum(album);
+  const del=document.createElement('button');del.type='button';del.className='danger';del.textContent='Delete Album';del.onclick=()=>deletePhotoAlbum(album,del);
+  tile.append(icon,title,meta,open,del);host.appendChild(tile);
+ }
+ if(status)status.textContent=albums.length+'টি অ্যালবাম পাওয়া গেছে।';
+ if(activeAlbumId){const selected=albums.find(a=>a.id===activeAlbumId);if(selected)await openPhotoAlbum(selected);else closeAlbumDetail();}
+}
+async function createPhotoAlbum(){
+ if(!currentUser){openLogin();return;}
+ const field=document.getElementById('newAlbumName'),status=document.getElementById('albumStatus'),name=field.value.trim();
+ if(!name){status.textContent='অ্যালবামের নাম লিখুন।';field.focus();return;}
+ status.textContent='তৈরি হচ্ছে...';
+ const {error}=await sb.from('albums').insert({user_id:currentUser.id,name});
+ if(error){status.textContent='অ্যালবাম তৈরি হয়নি: '+error.message;return;}
+ field.value='';status.textContent='অ্যালবাম তৈরি হয়েছে ❤️';await loadAlbums();
+}
+async function openPhotoAlbum(album){
+ if(!currentUser)return;
+ activeAlbumId=album.id;
+ const panel=document.getElementById('albumDetail');panel.style.display='block';
+ document.getElementById('albumDetailTitle').textContent='📁 '+album.name;
+ document.getElementById('albumDetailStatus').textContent='লোড হচ্ছে...';
+ const photoHost=document.getElementById('albumPhotoList'),availableHost=document.getElementById('albumAvailablePhotos');
+ photoHost.replaceChildren();availableHost.replaceChildren();
+ const {data:links,error}=await sb.from('album_media').select('media_id').eq('album_id',album.id);
+ if(error){document.getElementById('albumDetailStatus').textContent='অ্যালবামের ছবি পাওয়া যায়নি: '+error.message;return;}
+ const ids=(links||[]).map(x=>x.media_id);
+ let selected=[];
+ if(ids.length){const result=await sb.from('media_items').select('id,file_name,content_type,created_at').in('id',ids).eq('user_id',currentUser.id);if(result.error){document.getElementById('albumDetailStatus').textContent=result.error.message;return;}selected=result.data||[];}
+ if(!selected.length)photoHost.innerHTML='<p class="empty">এই অ্যালবামে এখনো কোনো ছবি নেই।</p>';
+ for(const item of selected){
+  const row=document.createElement('div');row.className='album-photo-row';
+  const name=document.createElement('span');name.textContent='📸 '+item.file_name;
+  const remove=document.createElement('button');remove.type='button';remove.className='danger';remove.textContent='Remove';remove.onclick=()=>removePhotoFromAlbum(album,item,remove);
+  row.append(name,remove);photoHost.appendChild(row);
+ }
+ const {data:all,error:allError}=await sb.from('media_items').select('id,file_name,content_type').eq('user_id',currentUser.id).like('content_type','image/%').order('created_at',{ascending:false}).limit(300);
+ if(allError){availableHost.textContent='ছবি লোড হয়নি: '+allError.message;return;}
+ const included=new Set(ids);
+ const available=(all||[]).filter(item=>!included.has(item.id));
+ if(!available.length)availableHost.innerHTML='<p class="empty">যোগ করার মতো নতুন ছবি নেই।</p>';
+ for(const item of available){
+  const row=document.createElement('div');row.className='album-photo-row';
+  const name=document.createElement('span');name.textContent='🖼️ '+item.file_name;
+  const add=document.createElement('button');add.type='button';add.textContent='＋ Add';add.onclick=()=>addPhotoToAlbum(album,item,add);
+  row.append(name,add);availableHost.appendChild(row);
+ }
+ document.getElementById('albumDetailStatus').textContent=selected.length+'টি ছবি এই অ্যালবামে আছে।';
+ panel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+async function addPhotoToAlbum(album,item,button){
+ button.disabled=true;
+ const {error}=await sb.from('album_media').insert({album_id:album.id,media_id:item.id});
+ if(error){alert('ছবি যোগ হয়নি: '+error.message);button.disabled=false;return;}
+ await openPhotoAlbum(album);await loadAlbums();
+}
+async function removePhotoFromAlbum(album,item,button){
+ button.disabled=true;
+ const {error}=await sb.from('album_media').delete().eq('album_id',album.id).eq('media_id',item.id);
+ if(error){alert('ছবি অ্যালবাম থেকে সরানো যায়নি: '+error.message);button.disabled=false;return;}
+ await openPhotoAlbum(album);await loadAlbums();
+}
+async function deletePhotoAlbum(album,button){
+ if(!confirm('“'+album.name+'” অ্যালবামটি মুছবেন? এতে মূল ছবি ডিলিট হবে না।'))return;
+ button.disabled=true;
+ const {error}=await sb.from('albums').delete().eq('id',album.id).eq('user_id',currentUser.id);
+ if(error){alert('অ্যালবাম মুছতে সমস্যা: '+error.message);button.disabled=false;return;}
+ if(activeAlbumId===album.id)closeAlbumDetail();
+ await loadAlbums();
+}
+function closeAlbumDetail(){activeAlbumId=null;const panel=document.getElementById('albumDetail');if(panel)panel.style.display='none';}
+
 </script>
 </body>
 </html>
