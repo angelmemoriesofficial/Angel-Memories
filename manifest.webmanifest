@@ -8,8 +8,8 @@
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#061535",
-  "theme_color": "#061535",
+  "background_color": "#0a2452",
+  "theme_color": "#164b91",
   "icons": [
     {
       "src": "./apk%20icon.png",
