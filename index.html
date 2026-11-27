@@ -317,8 +317,9 @@ nav a{font-size:clamp(14px,2vw,18px);white-space:nowrap;padding:9px 5px}
  <p class="subtitle">PIN দিয়ে এনক্রিপ্ট করে ব্যক্তিগত ছবি, ভিডিও ও ডকুমেন্ট সংরক্ষণ করুন।</p>
  <div class="panel vault-panel">
   <h3 style="color:#ffd45c;margin-top:0">Add Private Files</h3>
-  <label for="vaultPin">৬–১২ সংখ্যার PIN</label>
-  <input id="vaultPin" type="password" inputmode="numeric" pattern="[0-9]{6,12}" minlength="6" maxlength="12" autocomplete="new-password" placeholder="আপনার ৬–১২ সংখ্যার PIN">
+  <label for="vaultPin">৮–১২ সংখ্যার PIN</label>
+  <input id="vaultPin" type="password" inputmode="numeric" pattern="[0-9]{8,12}" minlength="8" maxlength="12" autocomplete="new-password" placeholder="আপনার ৮–১২ সংখ্যার PIN">
+  <input id="vaultPinConfirm" type="password" inputmode="numeric" pattern="[0-9]{8,12}" minlength="8" maxlength="12" autocomplete="new-password" placeholder="PIN আবার লিখুন">
   <input id="vaultFileInput" type="file" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt" hidden onchange="uploadVaultFiles()">
   <button type="button" id="vaultChooseBtn" onclick="chooseVaultFiles()">🔒 Encrypt & Save Files</button>
   <p id="vaultStatus" role="status" aria-live="polite"></p>
@@ -919,7 +920,7 @@ function bytesToBase64(bytes){let binary='';for(let i=0;i<bytes.length;i++)binar
 function base64ToBytes(value){const binary=atob(value);const bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);return bytes;}
 async function deriveVaultKey(pin,salt){
  const material=await crypto.subtle.importKey('raw',new TextEncoder().encode(pin),'PBKDF2',false,['deriveKey']);
- return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:310000,hash:'SHA-256'},material,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+ return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:600000,hash:'SHA-256'},material,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
 }
 async function uploadVaultFiles(){
  const input=document.getElementById('vaultFileInput'),status=document.getElementById('vaultStatus'),button=document.getElementById('vaultChooseBtn');
@@ -944,7 +945,7 @@ async function uploadVaultFiles(){
   }
  }catch(error){status.textContent='Vault-এ সমস্যা: '+(error?.message||'আবার চেষ্টা করুন।');}
  finally{input.value='';button.disabled=false;}
- document.getElementById('vaultPin').value='';
+ document.getElementById('vaultPin').value='';document.getElementById('vaultPinConfirm').value='';
  status.textContent=saved+'টি ফাইল এনক্রিপ্ট করে Private Vault-এ রাখা হয়েছে।'+(failed?' '+failed+'টি ফাইল সংরক্ষণ হয়নি।':'');
  await loadVaultItems();
 }
@@ -967,7 +968,7 @@ async function loadVaultItems(){
 async function decryptVaultItem(item,button){
  const pin=prompt('এই ফাইলটি আনলক করতে আপনার ৬–১২ সংখ্যার PIN লিখুন:');
  if(pin===null)return;
- if(!/^[0-9]{6,12}$/.test(pin)){alert('সঠিক ৬–১২ সংখ্যার PIN দিন।');return;}
+ if(!/^[0-9]{8,12}$/.test(pin)){alert('সঠিক ৮–১২ সংখ্যার PIN দিন।');return;}
  button.disabled=true;
  try{
   const {data:meta,error:metaError}=await sb.from('vault_items').select('object_path,salt_b64,iv_b64').eq('id',item.id).eq('user_id',currentUser.id).single();
