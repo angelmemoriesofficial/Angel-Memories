@@ -273,15 +273,18 @@ nav a{font-size:clamp(14px,2vw,18px);white-space:nowrap;padding:9px 5px}
 .vault-item small{display:block;color:#bdc9e0;margin-top:4px}
 .vault-item button{padding:8px 12px}
 
-/* Admin dashboard previews: responsive thumbnail cards */
-#adminFiles{display:grid;grid-template-columns:1fr;gap:10px}
-#adminFiles .admin-row{width:100%;min-width:0}
-#adminFiles .admin-row img{max-width:100%;max-height:100%;object-fit:cover}
-@media(max-width:650px){
- #adminFiles .admin-row{grid-template-columns:112px minmax(0,1fr)!important;gap:10px!important}
- #adminFiles .admin-row>div:last-child{grid-column:1/-1;justify-content:flex-start!important}
- #adminFiles .admin-row>div:first-child{width:112px!important}
-}
+
+/* Admin dashboard: visual gallery layout with large photo thumbnails. */
+#adminFiles{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(170px,1fr))!important;gap:14px!important;align-items:start}
+#adminFiles .admin-row{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;width:100%;min-width:0;margin:0!important;padding:10px!important;gap:9px!important;border:1px solid #526b96;border-radius:14px;background:linear-gradient(145deg,#10254c,#071832);overflow:hidden}
+#adminFiles .admin-preview{width:100%!important;height:auto!important;aspect-ratio:1/1!important;min-height:145px;display:grid;place-items:center;overflow:hidden;border:1px solid #d5ac48;border-radius:10px;background:#071a3b;color:#ffd45c;font-size:30px}
+#adminFiles .admin-preview img,#adminFiles .admin-preview video{display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:cover;cursor:zoom-in}
+#adminFiles .admin-file-info{min-width:0;overflow-wrap:anywhere;display:flex;flex-direction:column;gap:5px}
+#adminFiles .admin-file-info strong{color:#fff;font-size:14px;overflow-wrap:anywhere}
+#adminFiles .admin-file-info small{color:#cbd7ef;font-size:11px;overflow-wrap:anywhere}
+#adminFiles .admin-file-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-start}
+#adminFiles .admin-file-actions button{font-size:11px;padding:8px 10px}
+@media(max-width:420px){#adminFiles{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}#adminFiles .admin-row{padding:7px!important}#adminFiles .admin-preview{min-height:120px}}
 
 </style>
 </head>
@@ -619,23 +622,22 @@ async function loadAdminFiles(){
  if(!host||!summary)return;
  host.querySelectorAll('[data-admin-preview-url]').forEach(el=>{try{URL.revokeObjectURL(el.dataset.adminPreviewUrl)}catch(_e){}});
  host.replaceChildren();
- summary.textContent='সব ব্যবহারকারীর ফাইল লোড হচ্ছে...';
+ summary.textContent='সব ব্যবহারকারীর ফাইল গ্যালারিতে লোড হচ্ছে...';
  const {data:rows,error}=await sb.from('media_items').select('*').order('created_at',{ascending:false});
  if(error){host.textContent='তথ্য লোড হয়নি: '+error.message;summary.textContent='Admin file list unavailable';return}
- summary.textContent='মোট ফাইল: '+(rows?.length||0)+' • ছবি/ভিডিওর প্রিভিউ লোড হচ্ছে...';
- if(!rows?.length){host.innerHTML='<p class="empty">এখনো কোনো ফাইল আপলোড হয়নি।</p>';return}
+ if(!rows?.length){summary.textContent='মোট ফাইল: ০';host.innerHTML='<p class="empty">এখনো কোনো ফাইল আপলোড হয়নি।</p>';return}
+ const images=rows.filter(x=>x.content_type?.startsWith('image/')).length;
+ summary.textContent='মোট '+rows.length+'টি ফাইল • '+images+'টি ছবি • গ্যালারি ভিউ';
  const tasks=[];
  for(const item of rows){
-  const row=document.createElement('article');row.className='admin-row';
-  row.style.cssText='display:grid;grid-template-columns:150px minmax(0,1fr) auto;align-items:center;gap:14px;padding:14px;border:1px solid #526b96;border-radius:14px;background:linear-gradient(135deg,#10254c,#091a38);margin:10px 0';
-  const previewBox=document.createElement('div');
-  previewBox.style.cssText='width:150px;height:112px;display:grid;place-items:center;overflow:hidden;border:1px solid #d5ac48;border-radius:10px;background:#071a3b;color:#dce5ff;font-size:28px';
-  const info=document.createElement('div');info.style.cssText='min-width:0;overflow-wrap:anywhere';
-  const name=document.createElement('strong');name.textContent=item.file_name||'Unnamed file';name.style.cssText='display:block;color:#fff;font-size:15px;overflow-wrap:anywhere';
-  const meta=document.createElement('small');meta.textContent='User ID: '+item.user_id+' • '+new Date(item.created_at).toLocaleString()+' • '+(item.content_type||'Unknown type');
-  meta.style.cssText='display:block;color:#d4d9eb;margin-top:7px;overflow-wrap:anywhere';
-  info.append(name,meta);
-  const actions=document.createElement('div');actions.style.cssText='display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end';
+  const card=document.createElement('article');card.className='admin-row';
+  const previewBox=document.createElement('div');previewBox.className='admin-preview';
+  const info=document.createElement('div');info.className='admin-file-info';
+  const name=document.createElement('strong');name.textContent=item.file_name||'Unnamed file';
+  const meta=document.createElement('small');meta.textContent=(item.content_type||'Unknown type')+' • '+new Date(item.created_at).toLocaleString();
+  const owner=document.createElement('small');owner.textContent='User: '+item.user_id;
+  info.append(name,meta,owner);
+  const actions=document.createElement('div');actions.className='admin-file-actions';
   const download=document.createElement('button');download.type='button';download.textContent='⬇ Download';download.onclick=async()=>{
    download.disabled=true;
    const {data:blob,error}=await sb.storage.from('angel-memories').download(item.object_path);
@@ -653,44 +655,26 @@ async function loadAdminFiles(){
   };
   actions.append(download,del);
   if(item.content_type?.startsWith('image/')){
-   const img=document.createElement('img');img.alt=item.file_name||'Photo preview';img.loading='lazy';
-   img.style.cssText='width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in';
-   img.onerror=()=>{img.style.display='none';const err=document.createElement('span');err.textContent='⚠️ ছবি লোড হয়নি';err.style.cssText='color:#ffd45c;font-size:12px;padding:4px;text-align:center';if(!previewBox.querySelector('[data-preview-error]')){err.dataset.previewError='1';imgWrap.appendChild(err);}previewBox.title='ছবি প্রিভিউ লোড হয়নি';};
+   const img=document.createElement('img');img.alt=item.file_name||'Photo';img.loading='lazy';
+   img.onerror=()=>{img.remove();previewBox.textContent='⚠️ প্রিভিউ পাওয়া যায়নি';};
+   img.onclick=()=>openPhotoView(img.src,item);
    previewBox.appendChild(img);
-   const retry=document.createElement('button');retry.type='button';retry.textContent='↻ Preview';retry.style.cssText='font-size:11px;padding:6px 9px;margin-top:4px';
-   const loadPreview=async()=>{
-    retry.disabled=true;retry.textContent='লোড হচ্ছে...';
-    try{
-     const {data:signed,error:signedError}=await sb.storage.from('angel-memories').createSignedUrl(item.object_path,3600);
-     if(!signedError&&signed?.signedUrl){
-      img.style.display='block';img.src=signed.signedUrl;img.onclick=()=>openPhotoView(signed.signedUrl,item);
-      img.onload=()=>{retry.textContent='ছবি দেখুন';retry.disabled=false;};
-      img.onerror=async()=>{
-       try{const {data:blob,error:downloadError}=await sb.storage.from('angel-memories').download(item.object_path);
-        if(!downloadError&&blob){const objectUrl=URL.createObjectURL(blob);img.dataset.adminPreviewUrl=objectUrl;img.src=objectUrl;img.onerror=null;img.onclick=()=>openPhotoView(objectUrl,item);return;}
-        retry.textContent='প্রিভিউ পাওয়া যায়নি';retry.title=downloadError?.message||'Image decode/load failed';
-       }catch(e){retry.textContent='প্রিভিউ ব্যর্থ';retry.title=e?.message||'Image load failed';}
-      };
-      return;
-     }
-     const {data:blob,error:downloadError}=await sb.storage.from('angel-memories').download(item.object_path);
-     if(!downloadError&&blob){const objectUrl=URL.createObjectURL(blob);img.style.display='block';img.dataset.adminPreviewUrl=objectUrl;img.src=objectUrl;img.onclick=()=>openPhotoView(objectUrl,item);retry.textContent='ছবি দেখুন';retry.disabled=false;return;}
-     retry.textContent='প্রিভিউ পাওয়া যায়নি';retry.title=(signedError?.message||downloadError?.message||'Storage permission/path error');
-    }catch(e){retry.textContent='প্রিভিউ ব্যর্থ';retry.title=e?.message||'Unknown error'}
-    retry.disabled=false;
-   };
-   previewBox.style.display='flex';previewBox.style.flexDirection='column';previewBox.style.height='132px';
-   const imgWrap=document.createElement('div');imgWrap.style.cssText='width:100%;height:100px;display:grid;place-items:center;overflow:hidden';imgWrap.appendChild(img);
-   previewBox.replaceChildren(imgWrap,retry);
-   tasks.push(loadPreview());
-  }else{
-   previewBox.textContent=item.content_type?.startsWith('video/')?'🎬':'📄';
-  }
-  row.append(previewBox,info,actions);host.appendChild(row);
+   tasks.push((async()=>{
+    const {data,error:signedError}=await sb.storage.from('angel-memories').createSignedUrl(item.object_path,3600);
+    if(!signedError&&data?.signedUrl){img.src=data.signedUrl;return;}
+    const {data:blob,error:downloadError}=await sb.storage.from('angel-memories').download(item.object_path);
+    if(!downloadError&&blob){const objectUrl=URL.createObjectURL(blob);img.dataset.adminPreviewUrl=objectUrl;img.src=objectUrl;return;}
+    previewBox.textContent='⚠️ ছবি লোড হয়নি';previewBox.title=signedError?.message||downloadError?.message||'Storage preview error';
+   })());
+  }else if(item.content_type?.startsWith('video/')){
+   const video=document.createElement('video');video.controls=true;video.preload='metadata';
+   previewBox.appendChild(video);
+   tasks.push((async()=>{const {data:blob,error}=await sb.storage.from('angel-memories').download(item.object_path);if(error){previewBox.textContent='🎬 ভিডিও প্রিভিউ নেই';return;}const url=URL.createObjectURL(blob);video.dataset.adminPreviewUrl=url;video.src=url;})());
+  }else{previewBox.textContent='📄';}
+  card.append(previewBox,info,actions);host.appendChild(card);
  }
  await Promise.allSettled(tasks);
- const failed=host.querySelectorAll('button[title*="Storage"],button[title*="error"]').length;
- summary.textContent='মোট ফাইল: '+rows.length+' • ছবি প্রিভিউ চেষ্টা সম্পন্ন'+(failed?' • '+failed+'টি প্রিভিউতে সমস্যা':'');
+ summary.textContent='মোট '+rows.length+'টি ফাইল • '+images+'টি ছবি • '+host.querySelectorAll('.admin-preview img').length+'টি ছবির থাম্বনেইল দেখানো হয়েছে।';
 }
 function openPhotoView(url,item){activePhotoItem=item;photoZoom=1;const modal=document.getElementById('photoView'),img=document.getElementById('photoViewImage');img.src=url;img.style.transform='scale(1)';document.getElementById('photoViewTitle').textContent=item.file_name;document.getElementById('photoDeleteBtn').style.display=currentRole==='admin'?'inline-block':'none';modal.classList.add('open');history.pushState({angelMemories:true,angelMemoriesOverlay:'photo',page:currentPage},'');}
 function zoomPhoto(factor){photoZoom=Math.max(.5,Math.min(4,photoZoom*factor));document.getElementById('photoViewImage').style.transform='scale('+photoZoom+')';}
