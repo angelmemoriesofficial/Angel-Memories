@@ -263,12 +263,21 @@ nav a{font-size:clamp(14px,2vw,18px);white-space:nowrap;padding:9px 5px}
 .album-photo-row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:12px;background:#071a3b;border:1px solid #526b96;border-radius:12px}
 .album-photo-row span{min-width:0;overflow-wrap:anywhere;flex:1}
 .album-photo-row button{padding:8px 12px;font-size:12px}
+
+.backup-panel,.vault-panel{max-width:850px;margin:20px auto}
+.backup-note{font-size:13px;color:#b9c8e8;line-height:1.65;margin-top:16px}
+.vault-panel input:not([type=file]){display:block;width:min(100%,340px);margin:12px auto;padding:13px;text-align:center;letter-spacing:4px}
+.vault-list-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.vault-item{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:12px;margin:10px 0;background:#071a3b;border:1px solid #526b96;border-radius:12px}
+.vault-item-name{flex:1;min-width:150px;overflow-wrap:anywhere}
+.vault-item small{display:block;color:#bdc9e0;margin-top:4px}
+.vault-item button{padding:8px 12px}
 </style>
 </head>
 <body>
 <header>
  <div class="brand"><img src="logo.png" alt="Angel Memories Logo"><div><strong>Angel Memories</strong><small>Private Cloud Gallery</small></div></div>
- <nav id="mainNav"><a href="#home" data-page="home" onclick="showPage('home')">Home</a><a href="#gallery" data-page="gallery" onclick="showPage('gallery')">Gallery</a><a href="#albums" data-page="albums" onclick="showPage('albums')">Albums</a><a href="#videos" data-page="videos" onclick="showPage('videos')">Videos</a><a href="#documents" data-page="documents" onclick="showPage('documents')">Documents</a><a href="#about" data-page="about" onclick="showPage('about')">About</a><a href="#contact" data-page="contact" onclick="showPage('contact')">Contact</a></nav>
+ <nav id="mainNav"><a href="#home" data-page="home" onclick="showPage('home')">Home</a><a href="#gallery" data-page="gallery" onclick="showPage('gallery')">Gallery</a><a href="#albums" data-page="albums" onclick="showPage('albums')">Albums</a><a href="#backup" data-page="backup" onclick="showPage('backup')">Backup</a><a href="#vault" data-page="vault" onclick="showPage('vault')">Private Vault</a><a href="#videos" data-page="videos" onclick="showPage('videos')">Videos</a><a href="#documents" data-page="documents" onclick="showPage('documents')">Documents</a><a href="#about" data-page="about" onclick="showPage('about')">About</a><a href="#contact" data-page="contact" onclick="showPage('contact')">Contact</a></nav>
  <div class="header-actions"><button id="backBtn" onclick="goBack()" title="আগের পেজে ফিরে যান">← Back</button><button id="profileBtn" onclick="openProfile()"><img id="profileBtnPhoto" src="logo.png" alt="" class="profile-btn-photo"><span>Profile</span></button><button id="adminBtn" style="display:none" onclick="showPage('adminDashboard')">🛡️ Admin</button><button id="settingsBtn" onclick="showPage('settings')">⚙️ Settings</button><button id="loginBtn" onclick="openLogin()">Login</button></div>
 </header>
 <a id="downloadApkHeader" class="floating-apk-download" href="/download/Angel-Memories.apk" download="Angel-Memories.apk" aria-label="Download official Angel Memories Android APK">⬇ APK ডাউনলোড</a>
@@ -290,6 +299,33 @@ nav a{font-size:clamp(14px,2vw,18px);white-space:nowrap;padding:9px 5px}
 <section class="home-share page-section active-page" data-page="home" aria-label="Share Angel Memories"><h2>💙 Share Angel Memories</h2><p>আপনার পরিবার ও বন্ধুদের সঙ্গে Angel Memories পরিচয় করিয়ে দিন।</p><div class="home-share-buttons"><a class="download-apk" href="/download/Angel-Memories.apk" download="Angel-Memories.apk" aria-label="Download official Angel Memories Android APK">📲 Official APK Download</a><button type="button" onclick="shareWebsite()">🔗 Link Share</button><button type="button" onclick="shareSocial('facebook')">ⓕ Facebook</button><button type="button" onclick="shareSocial('whatsapp')">🟢 WhatsApp</button><button type="button" onclick="shareSocial('imo')">💬 imo</button><button type="button" onclick="shareSocial('messenger')">🔵 Messenger</button><button type="button" onclick="shareSocial('telegram')">✈️ Telegram</button><button type="button" onclick="shareSocial('x')">𝕏 Share</button></div><p id="homeShareMessage" role="status" aria-live="polite"></p></section>
 <section class="page-section" data-page="upload" id="upload" style="display:none"><h2 class="section-title">☁ One Click Upload</h2><div class="panel"><p>একবার বাটনে চাপ দিয়ে ছবি, ভিডিও অথবা ডকুমেন্ট নির্বাচন করুন। নির্বাচন করলেই আপলোড শুরু হবে।</p><input type="file" id="fileInput" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt" hidden onchange="uploadFiles()"><button type="button" id="chooseUploadBtn" onclick="document.getElementById('fileInput').click()">☁ Choose Files & Upload</button><p id="status" role="status" aria-live="polite"></p></div></section>
 <section class="page-section" data-page="gallery" id="gallery"><h2 class="section-title">🔍 Search Memories</h2><p class="subtitle">আপনার অ্যাকাউন্টের ছবি, ভিডিও ও ডকুমেন্টের নাম লিখে খুঁজুন।</p><input id="search" type="search" placeholder="ছবি, ভিডিও বা ডকুমেন্টের নাম লিখুন..." oninput="searchMemories()" style="display:block;width:min(92%,560px);margin:16px auto"><p id="searchStatus" class="empty" role="status" aria-live="polite">খুঁজতে উপরের বক্সে নাম লিখুন।</p><div class="gallery" id="searchResults"></div><h3 class="section-title">📸 Photo Gallery</h3><div class="gallery" id="photos"><p class="empty">আপনার ছবিগুলো এখানে দেখা যাবে।</p></div></section>
+
+<section class="page-section" data-page="backup" id="backup">
+ <h2 class="section-title">☁️ Cloud Backup</h2>
+ <p class="subtitle">একবারে একাধিক ছবি, ভিডিও ও ডকুমেন্ট নির্বাচন করুন—নির্বাচনের পর ক্লাউডে আপলোড স্বয়ংক্রিয়ভাবে শুরু হবে।</p>
+ <div class="panel backup-panel">
+  <div style="font-size:42px">🛡️</div><h3 style="color:#ffd45c">One-tap Cloud Backup</h3>
+  <p>Backup Now চাপুন, ফোন থেকে ফাইল বাছুন। বাছাই শেষ হলে প্রতিটি ফাইল আপনার Angel Memories অ্যাকাউন্টে আপলোড হবে।</p>
+  <button type="button" id="backupNowBtn" onclick="startCloudBackup()">☁ Backup Now</button>
+  <p id="backupStatus" role="status" aria-live="polite"></p>
+  <p class="backup-note">নোট: Android/browser নিরাপত্তার কারণে অ্যাপ বন্ধ থাকলে ফোনের পুরো Gallery নিজে থেকে স্ক্যান বা ব্যাকগ্রাউন্ডে কপি করতে পারে না। নতুন ফাইল ব্যাকআপ করতে আপনাকে ফাইল নির্বাচন করতে হবে।</p>
+ </div>
+ <div class="panel"><h3>আপনার ক্লাউড ব্যাকআপ</h3><p id="backupSummary">Login করে আপনার সংরক্ষিত ফাইল দেখুন।</p><button type="button" onclick="showPage('gallery')">আমার ফাইল দেখুন</button></div>
+</section>
+<section class="page-section" data-page="vault" id="vault">
+ <h2 class="section-title">🔐 Private PIN Vault</h2>
+ <p class="subtitle">PIN দিয়ে এনক্রিপ্ট করে ব্যক্তিগত ছবি, ভিডিও ও ডকুমেন্ট সংরক্ষণ করুন।</p>
+ <div class="panel vault-panel">
+  <h3 style="color:#ffd45c;margin-top:0">Add Private Files</h3>
+  <label for="vaultPin">৬–১২ সংখ্যার PIN</label>
+  <input id="vaultPin" type="password" inputmode="numeric" pattern="[0-9]{6,12}" minlength="6" maxlength="12" autocomplete="new-password" placeholder="আপনার ৬–১২ সংখ্যার PIN">
+  <input id="vaultFileInput" type="file" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt" hidden onchange="uploadVaultFiles()">
+  <button type="button" id="vaultChooseBtn" onclick="chooseVaultFiles()">🔒 Encrypt & Save Files</button>
+  <p id="vaultStatus" role="status" aria-live="polite"></p>
+  <p class="backup-note">গুরুত্বপূর্ণ: PIN সার্ভারে সংরক্ষণ করা হয় না। PIN ভুলে গেলে এনক্রিপ্ট করা ফাইল পুনরুদ্ধার করা যাবে না। PIN নিরাপদে মনে রাখুন।</p>
+ </div>
+ <div class="panel"><div class="vault-list-head"><h3>My Encrypted Vault</h3><button type="button" onclick="loadVaultItems()">↻ Refresh</button></div><div id="vaultItems"><p class="empty">Login করে আপনার Private Vault দেখুন।</p></div></div>
+</section>
 <section class="page-section" data-page="albums" id="albums">
  <h2 class="section-title">🗂️ My Photo Albums</h2>
  <p class="subtitle">নিজের ছবিগুলো আলাদা অ্যালবামে সাজিয়ে রাখুন। অ্যালবাম মুছলে ছবি ডিলিট হবে না।</p>
@@ -390,7 +426,7 @@ let currentPage='home';
 let pageHistory=[];
 let activePhotoItem=null,photoZoom=1,galleryLoadToken=0;
 function openLogin(){document.getElementById('loginModal').style.display='flex';}
-function renderPage(page){if(page==='adminDashboard'&&currentRole!=='admin')page='home';currentPage=page;document.querySelectorAll('.page-section').forEach(el=>el.classList.toggle('active-page',el.dataset.page===page));document.querySelectorAll('#mainNav a').forEach(a=>a.classList.toggle('active',a.dataset.page===page));const back=document.getElementById('backBtn');if(back)back.disabled=pageHistory.length===0;window.scrollTo({top:0,behavior:'smooth'});if(page==='adminDashboard'&&currentUser&&currentRole==='admin')loadAdminFiles();if(page==='profile')loadProfile();if(page==='settings')loadSettings();if(page==='albums')loadAlbums();}
+function renderPage(page){if(page==='adminDashboard'&&currentRole!=='admin')page='home';currentPage=page;document.querySelectorAll('.page-section').forEach(el=>el.classList.toggle('active-page',el.dataset.page===page));document.querySelectorAll('#mainNav a').forEach(a=>a.classList.toggle('active',a.dataset.page===page));const back=document.getElementById('backBtn');if(back)back.disabled=pageHistory.length===0;window.scrollTo({top:0,behavior:'smooth'});if(page==='adminDashboard'&&currentUser&&currentRole==='admin')loadAdminFiles();if(page==='profile')loadProfile();if(page==='settings')loadSettings();if(page==='albums')loadAlbums();if(page==='backup')loadBackupSummary();if(page==='vault')loadVaultItems();}
 function showPage(page,fromBack=false){if(page==='adminDashboard'&&currentRole!=='admin')page='home';if(page===currentPage)return;if(!fromBack){pageHistory.push(currentPage);history.pushState({angelMemories:true,page},'','#'+page);}renderPage(page);}
 function goBack(){if(history.state?.angelMemories){history.back();return;}if(pageHistory.length){const previous=pageHistory.pop();renderPage(previous);}else if(currentPage!=='home'){renderPage('home');}else if(document.getElementById('photoView')?.classList.contains('open'))closePhotoView();}
 function closePhotoViewFromPop(){const modal=document.getElementById('photoView');if(modal?.classList.contains('open')){modal.classList.remove('open');document.getElementById('photoViewImage').src='';activePhotoItem=null;}}
@@ -851,6 +887,100 @@ async function deletePhotoAlbum(album,button){
  await loadAlbums();
 }
 function closeAlbumDetail(){activeAlbumId=null;const panel=document.getElementById('albumDetail');if(panel)panel.style.display='none';}
+
+
+/* Cloud Backup: selected files upload automatically after the user chooses them. */
+function startCloudBackup(){
+ if(!currentUser){openLogin();return;}
+ const input=document.getElementById('fileInput');
+ if(!input){document.getElementById('backupStatus').textContent='Backup picker পাওয়া যায়নি।';return;}
+ const originalStatus=document.getElementById('status');
+ if(originalStatus)originalStatus.textContent='Backup-এর জন্য ফাইল নির্বাচন করুন।';
+ input.click();
+ const status=document.getElementById('backupStatus');
+ if(status)status.textContent='ফাইল নির্বাচন করুন—নির্বাচনের পর আপলোড শুরু হবে।';
+}
+async function loadBackupSummary(){
+ const el=document.getElementById('backupSummary');if(!el)return;
+ if(!currentUser){el.textContent='Backup ব্যবহার করতে Login করুন।';return;}
+ const {data,error}=await sb.from('media_items').select('id,size_bytes');
+ if(error){el.textContent='Backup তথ্য পাওয়া যায়নি: '+error.message;return;}
+ const total=(data||[]).reduce((n,x)=>n+(Number(x.size_bytes)||0),0);
+ el.textContent=(data?.length||0)+'টি ফাইল ক্লাউডে সংরক্ষিত • মোট '+formatBytes(total);
+}
+function chooseVaultFiles(){
+ if(!currentUser){openLogin();return;}
+ const pin=document.getElementById('vaultPin').value;
+ if(!/^[0-9]{6,12}$/.test(pin)){document.getElementById('vaultStatus').textContent='৬–১২ সংখ্যার PIN লিখুন।';return;}
+ document.getElementById('vaultFileInput').click();
+}
+function bytesToBase64(bytes){let binary='';for(let i=0;i<bytes.length;i++)binary+=String.fromCharCode(bytes[i]);return btoa(binary);}
+function base64ToBytes(value){const binary=atob(value);const bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);return bytes;}
+async function deriveVaultKey(pin,salt){
+ const material=await crypto.subtle.importKey('raw',new TextEncoder().encode(pin),'PBKDF2',false,['deriveKey']);
+ return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:310000,hash:'SHA-256'},material,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+}
+async function uploadVaultFiles(){
+ const input=document.getElementById('vaultFileInput'),status=document.getElementById('vaultStatus'),button=document.getElementById('vaultChooseBtn');
+ const pin=document.getElementById('vaultPin').value,files=Array.from(input.files||[]);
+ if(!currentUser){input.value='';openLogin();return;}
+ if(!/^[0-9]{6,12}$/.test(pin)){status.textContent='৬–১২ সংখ্যার PIN লিখুন।';input.value='';return;}
+ if(!files.length)return;
+ button.disabled=true;let saved=0,failed=0;
+ try{
+  for(let i=0;i<files.length;i++){
+   const file=files[i];status.textContent='এনক্রিপ্ট ও সংরক্ষণ হচ্ছে ('+(i+1)+'/'+files.length+'): '+file.name;
+   if(file.size>45*1024*1024){status.textContent=file.name+' ৪৫ MB-এর বেশি, বাদ দেওয়া হয়েছে।';failed++;continue;}
+   const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
+   const key=await deriveVaultKey(pin,salt),plain=await file.arrayBuffer();
+   const cipher=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,plain);
+   const path=currentUser.id+'/vault/'+crypto.randomUUID()+'.enc';
+   const {error:upErr}=await sb.storage.from('angel-memories').upload(path,new Blob([cipher],{type:'application/octet-stream'}),{contentType:'application/octet-stream',upsert:false});
+   if(upErr){status.textContent='ফাইল সংরক্ষণ হয়নি: '+upErr.message;failed++;continue;}
+   const {error:rowErr}=await sb.from('vault_items').insert({user_id:currentUser.id,object_path:path,file_name:file.name,content_type:file.type||'application/octet-stream',size_bytes:file.size,salt_b64:bytesToBase64(salt),iv_b64:bytesToBase64(iv)});
+   if(rowErr){await sb.storage.from('angel-memories').remove([path]);status.textContent='Vault তথ্য সংরক্ষণ হয়নি: '+rowErr.message;failed++;continue;}
+   saved++;
+  }
+ }catch(error){status.textContent='Vault-এ সমস্যা: '+(error?.message||'আবার চেষ্টা করুন।');}
+ finally{input.value='';button.disabled=false;}
+ document.getElementById('vaultPin').value='';
+ status.textContent=saved+'টি ফাইল এনক্রিপ্ট করে Private Vault-এ রাখা হয়েছে।'+(failed?' '+failed+'টি ফাইল সংরক্ষণ হয়নি।':'');
+ await loadVaultItems();
+}
+async function loadVaultItems(){
+ const host=document.getElementById('vaultItems');if(!host)return;
+ if(!currentUser){host.innerHTML='<p class="empty">Private Vault দেখতে Login করুন।</p>';return;}
+ host.innerHTML='<p class="empty">Encrypted files লোড হচ্ছে...</p>';
+ const {data,error}=await sb.from('vault_items').select('id,file_name,content_type,size_bytes,created_at').eq('user_id',currentUser.id).order('created_at',{ascending:false});
+ if(error){host.textContent='Vault লোড হয়নি: '+error.message;return;}
+ host.replaceChildren();
+ if(!data?.length){host.innerHTML='<p class="empty">এখনো কোনো Private file নেই। উপরে PIN দিয়ে ফাইল যোগ করুন।</p>';return;}
+ for(const item of data){
+  const row=document.createElement('div');row.className='vault-item';
+  const name=document.createElement('div');name.className='vault-item-name';name.textContent=(item.content_type.startsWith('image/')?'🖼️ ':item.content_type.startsWith('video/')?'🎬 ':'🔒 ')+item.file_name;
+  const meta=document.createElement('small');meta.textContent=formatBytes(Number(item.size_bytes)||0)+' • '+new Date(item.created_at).toLocaleDateString();name.appendChild(meta);
+  const download=document.createElement('button');download.type='button';download.textContent='🔓 Unlock & Download';download.onclick=()=>decryptVaultItem(item,download);
+  row.append(name,download);host.appendChild(row);
+ }
+}
+async function decryptVaultItem(item,button){
+ const pin=prompt('এই ফাইলটি আনলক করতে আপনার ৬–১২ সংখ্যার PIN লিখুন:');
+ if(pin===null)return;
+ if(!/^[0-9]{6,12}$/.test(pin)){alert('সঠিক ৬–১২ সংখ্যার PIN দিন।');return;}
+ button.disabled=true;
+ try{
+  const {data:meta,error:metaError}=await sb.from('vault_items').select('object_path,salt_b64,iv_b64').eq('id',item.id).eq('user_id',currentUser.id).single();
+  if(metaError)throw metaError;
+  const {data:blob,error:downloadError}=await sb.storage.from('angel-memories').download(meta.object_path);
+  if(downloadError)throw downloadError;
+  const key=await deriveVaultKey(pin,base64ToBytes(meta.salt_b64));
+  const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:base64ToBytes(meta.iv_b64)},key,await blob.arrayBuffer());
+  const out=new Blob([plain],{type:item.content_type||'application/octet-stream'}),url=URL.createObjectURL(out);
+  const link=document.createElement('a');link.href=url;link.download=item.file_name;document.body.appendChild(link);link.click();link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),60000);
+ }catch(error){alert('PIN ভুল অথবা ফাইল আনলক করা যায়নি। '+(error?.message||''));}
+ finally{button.disabled=false;}
+}
 
 </script>
 </body>
