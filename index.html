@@ -605,16 +605,35 @@ async function loadMyFiles(){
 }
 async function loadAdminFiles(){
  const host=document.getElementById('adminFiles'),summary=document.getElementById('adminSummary');
- host.innerHTML='';summary.textContent='সব ব্যবহারকারীর ফাইলের তালিকা';
+ if(!host||!summary)return;
+ // Revoke previous preview URLs before rebuilding the dashboard.
+ host.querySelectorAll('[data-admin-preview-url]').forEach(el=>{try{URL.revokeObjectURL(el.dataset.adminPreviewUrl)}catch(_e){}});
+ host.replaceChildren();summary.textContent='সব ব্যবহারকারীর ফাইল লোড হচ্ছে...';
  const {data:rows,error}=await sb.from('media_items').select('*').order('created_at',{ascending:false});
- if(error){host.textContent='তথ্য লোড হয়নি: '+error.message;return}
+ if(error){host.textContent='তথ্য লোড হয়নি: '+error.message;summary.textContent='Admin file list unavailable';return}
  summary.textContent='মোট ফাইল: '+(rows?.length||0);
  if(!rows?.length){host.innerHTML='<p class="empty">এখনো কোনো ফাইল আপলোড হয়নি।</p>';return}
  for(const item of rows){
   const row=document.createElement('div');row.className='admin-row';
   const info=document.createElement('div'),name=document.createElement('strong'),meta=document.createElement('small');
-  name.textContent=item.file_name;meta.textContent='User ID: '+item.user_id+' • '+new Date(item.created_at).toLocaleString();
-  info.append(name,meta);row.appendChild(info);
+  info.style.flex='1';info.style.minWidth='150px';
+  name.textContent=item.file_name;
+  meta.textContent='User ID: '+item.user_id+' • '+new Date(item.created_at).toLocaleString();
+  info.append(name,meta);
+  if(item.content_type?.startsWith('image/')){
+   const preview=document.createElement('img');
+   preview.alt=item.file_name;preview.loading='lazy';
+   preview.style.cssText='width:112px;height:88px;object-fit:cover;border:1px solid #d5ac48;border-radius:9px;background:#071a3b;flex:0 0 112px';
+   preview.title='ছবি বড় করে দেখতে ক্লিক করুন';
+   preview.onerror=()=>{preview.alt='ছবি লোড হয়নি';preview.style.display='none'};
+   try{
+    const {data:blob,error:previewError}=await sb.storage.from('angel-memories').download(item.object_path);
+    if(!previewError&&blob){const objectUrl=URL.createObjectURL(blob);preview.src=objectUrl;preview.dataset.adminPreviewUrl=objectUrl;preview.onclick=()=>openPhotoView(objectUrl,item);preview.style.cursor='zoom-in';row.appendChild(preview);}
+   }catch(previewError){console.warn('Admin photo preview unavailable:',item.file_name,previewError);}
+  }else{
+   const type=document.createElement('span');type.textContent=item.content_type?.startsWith('video/')?'🎬':'📄';type.style.cssText='font-size:30px;flex:0 0 48px;text-align:center';row.appendChild(type);
+  }
+  row.appendChild(info);
   const actions=document.createElement('div');
   const download=document.createElement('button');download.textContent='⬇ Download';download.onclick=async()=>{
    const {data:blob,error}=await sb.storage.from('angel-memories').download(item.object_path);
