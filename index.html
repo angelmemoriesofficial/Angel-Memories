@@ -707,6 +707,7 @@ async function uploadFiles(){
   button.disabled=false;
  }
  status.textContent=uploaded+'টি ফাইল আপলোড সম্পন্ন ❤️'+(failed?' | '+failed+'টি আপলোড হয়নি।':'');
+ const backupStatus=document.getElementById('backupStatus');if(backupStatus)backupStatus.textContent='Backup সম্পন্ন: '+uploaded+'টি ফাইল আপলোড হয়েছে।'+(failed?' '+failed+'টি ব্যর্থ হয়েছে।':'');
  await loadMyFiles();
 }
 function openMemorySearch(){
