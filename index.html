@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#061535">
+<meta name="theme-color" content="#081b3e">
 <title>Angel Memories | Private Cloud Gallery</title>
 <link rel="icon" type="image/png" href="apk%20icon.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -289,6 +289,90 @@ nav a{font-size:clamp(14px,2vw,18px);white-space:nowrap;padding:9px 5px}
 #adminFiles .admin-file-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-start}
 #adminFiles .admin-file-actions button{font-size:11px;padding:8px 10px}
 @media(max-width:420px){#adminFiles{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}#adminFiles .admin-row{padding:7px!important}#adminFiles .admin-preview{min-height:120px}}
+
+
+/* Angel Memories: Royal Blue + Gold / Futuristic Glass refresh */
+:root{
+ --navy:#061535;--gold:#f4c95d;--white:#f7f9ff;
+ --am-blue:#0b2452;--am-blue-deep:#06132e;
+ --am-glass:rgba(15,39,82,.62);
+ --am-glass-border:rgba(244,201,93,.42);
+ --am-glow:rgba(67,132,255,.18);
+}
+html{background:#06132e}
+body{
+ background:
+  radial-gradient(ellipse at 12% 0%,rgba(38,91,177,.34),transparent 38%),
+  radial-gradient(ellipse at 92% 18%,rgba(196,151,52,.12),transparent 32%),
+  linear-gradient(145deg,#040d21 0%,#081b3e 48%,#06132e 100%);
+ background-attachment:fixed;
+ color:#f7f9ff;
+}
+header{
+ background:rgba(5,19,45,.78)!important;
+ -webkit-backdrop-filter:blur(18px) saturate(145%);
+ backdrop-filter:blur(18px) saturate(145%);
+ border-bottom:1px solid rgba(244,201,93,.55)!important;
+ box-shadow:0 10px 35px rgba(0,0,0,.22);
+}
+.brand strong,.hero h1,h2.section-title{color:#f4d27a}
+nav a{transition:color .2s ease,background .2s ease}
+nav a:hover,nav a.active{
+ color:#ffe39a;
+ border-bottom-color:#f4c95d;
+ text-shadow:0 0 16px rgba(244,201,93,.25);
+}
+button,.header-actions button{
+ border:1px solid rgba(255,232,174,.82);
+ background:linear-gradient(135deg,#ffe9a8 0%,#f4c95d 48%,#c9972d 100%);
+ color:#071735;
+ box-shadow:0 7px 22px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.65);
+}
+button:hover{filter:brightness(1.07);box-shadow:0 10px 28px rgba(0,0,0,.32),0 0 18px rgba(244,201,93,.16)}
+section{scroll-margin-top:100px}
+.panel,.card,.feature,.album-tile,.backup-panel,.vault-panel,
+.album-photo-row,.vault-item,#adminFiles .admin-row,
+#adminFiles .admin-preview,.modal-content,.settings-panel,
+.stat-card,.dashboard-card,.upload-panel,.gallery-card{
+ background:linear-gradient(145deg,rgba(20,48,96,.72),rgba(6,21,49,.78))!important;
+ border:1px solid var(--am-glass-border)!important;
+ border-radius:18px!important;
+ box-shadow:0 14px 38px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.07);
+ -webkit-backdrop-filter:blur(14px) saturate(135%);
+ backdrop-filter:blur(14px) saturate(135%);
+}
+.page-section[data-page="home"] .feature{
+ background:linear-gradient(145deg,rgba(28,62,119,.72),rgba(7,24,55,.78))!important;
+ border-color:rgba(244,201,93,.48)!important;
+}
+.album-tile h3{color:#f4d27a}
+input,select,textarea{
+ background:rgba(3,15,37,.72)!important;
+ color:#f7f9ff!important;
+ border:1px solid rgba(150,181,232,.38)!important;
+ border-radius:12px!important;
+}
+input:focus,select:focus,textarea:focus{
+ outline:2px solid rgba(244,201,93,.62);
+ outline-offset:2px;
+}
+.subtitle,.backup-note{color:#c8d8f5}
+a{accent-color:#f4c95d}
+#adminFiles .admin-row{
+ background:linear-gradient(145deg,rgba(20,48,96,.82),rgba(5,19,44,.9))!important;
+}
+#adminFiles .admin-preview{
+ background:rgba(3,15,37,.78)!important;
+ border-color:rgba(244,201,93,.58)!important;
+}
+.hero-banner-image{
+ border-radius:16px;
+ box-shadow:0 18px 50px rgba(0,0,0,.35),0 0 0 1px rgba(244,201,93,.2);
+}
+@media(max-width:650px){
+ header{padding-top:12px;padding-bottom:12px}
+ .brand strong{letter-spacing:.3px}
+}
 
 </style>
 </head>
