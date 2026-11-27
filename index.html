@@ -272,6 +272,17 @@ nav a{font-size:clamp(14px,2vw,18px);white-space:nowrap;padding:9px 5px}
 .vault-item-name{flex:1;min-width:150px;overflow-wrap:anywhere}
 .vault-item small{display:block;color:#bdc9e0;margin-top:4px}
 .vault-item button{padding:8px 12px}
+
+/* Admin dashboard previews: responsive thumbnail cards */
+#adminFiles{display:grid;grid-template-columns:1fr;gap:10px}
+#adminFiles .admin-row{width:100%;min-width:0}
+#adminFiles .admin-row img{max-width:100%;max-height:100%;object-fit:cover}
+@media(max-width:650px){
+ #adminFiles .admin-row{grid-template-columns:112px minmax(0,1fr)!important;gap:10px!important}
+ #adminFiles .admin-row>div:last-child{grid-column:1/-1;justify-content:flex-start!important}
+ #adminFiles .admin-row>div:first-child{width:112px!important}
+}
+
 </style>
 </head>
 <body>
@@ -606,41 +617,32 @@ async function loadMyFiles(){
 async function loadAdminFiles(){
  const host=document.getElementById('adminFiles'),summary=document.getElementById('adminSummary');
  if(!host||!summary)return;
- // Revoke previous preview URLs before rebuilding the dashboard.
  host.querySelectorAll('[data-admin-preview-url]').forEach(el=>{try{URL.revokeObjectURL(el.dataset.adminPreviewUrl)}catch(_e){}});
- host.replaceChildren();summary.textContent='সব ব্যবহারকারীর ফাইল লোড হচ্ছে...';
+ host.replaceChildren();
+ summary.textContent='সব ব্যবহারকারীর ফাইল লোড হচ্ছে...';
  const {data:rows,error}=await sb.from('media_items').select('*').order('created_at',{ascending:false});
  if(error){host.textContent='তথ্য লোড হয়নি: '+error.message;summary.textContent='Admin file list unavailable';return}
- summary.textContent='মোট ফাইল: '+(rows?.length||0);
+ summary.textContent='মোট ফাইল: '+(rows?.length||0)+' • ছবি/ভিডিওর প্রিভিউ লোড হচ্ছে...';
  if(!rows?.length){host.innerHTML='<p class="empty">এখনো কোনো ফাইল আপলোড হয়নি।</p>';return}
+ const tasks=[];
  for(const item of rows){
-  const row=document.createElement('div');row.className='admin-row';
-  const info=document.createElement('div'),name=document.createElement('strong'),meta=document.createElement('small');
-  info.style.flex='1';info.style.minWidth='150px';
-  name.textContent=item.file_name;
-  meta.textContent='User ID: '+item.user_id+' • '+new Date(item.created_at).toLocaleString();
+  const row=document.createElement('article');row.className='admin-row';
+  row.style.cssText='display:grid;grid-template-columns:150px minmax(0,1fr) auto;align-items:center;gap:14px;padding:14px;border:1px solid #526b96;border-radius:14px;background:linear-gradient(135deg,#10254c,#091a38);margin:10px 0';
+  const previewBox=document.createElement('div');
+  previewBox.style.cssText='width:150px;height:112px;display:grid;place-items:center;overflow:hidden;border:1px solid #d5ac48;border-radius:10px;background:#071a3b;color:#dce5ff;font-size:28px';
+  const info=document.createElement('div');info.style.cssText='min-width:0;overflow-wrap:anywhere';
+  const name=document.createElement('strong');name.textContent=item.file_name||'Unnamed file';name.style.cssText='display:block;color:#fff;font-size:15px;overflow-wrap:anywhere';
+  const meta=document.createElement('small');meta.textContent='User ID: '+item.user_id+' • '+new Date(item.created_at).toLocaleString()+' • '+(item.content_type||'Unknown type');
+  meta.style.cssText='display:block;color:#d4d9eb;margin-top:7px;overflow-wrap:anywhere';
   info.append(name,meta);
-  if(item.content_type?.startsWith('image/')){
-   const preview=document.createElement('img');
-   preview.alt=item.file_name;preview.loading='lazy';
-   preview.style.cssText='width:112px;height:88px;object-fit:cover;border:1px solid #d5ac48;border-radius:9px;background:#071a3b;flex:0 0 112px';
-   preview.title='ছবি বড় করে দেখতে ক্লিক করুন';
-   preview.onerror=()=>{preview.alt='ছবি লোড হয়নি';preview.style.display='none'};
-   try{
-    const {data:blob,error:previewError}=await sb.storage.from('angel-memories').download(item.object_path);
-    if(!previewError&&blob){const objectUrl=URL.createObjectURL(blob);preview.src=objectUrl;preview.dataset.adminPreviewUrl=objectUrl;preview.onclick=()=>openPhotoView(objectUrl,item);preview.style.cursor='zoom-in';row.appendChild(preview);}
-   }catch(previewError){console.warn('Admin photo preview unavailable:',item.file_name,previewError);}
-  }else{
-   const type=document.createElement('span');type.textContent=item.content_type?.startsWith('video/')?'🎬':'📄';type.style.cssText='font-size:30px;flex:0 0 48px;text-align:center';row.appendChild(type);
-  }
-  row.appendChild(info);
-  const actions=document.createElement('div');
-  const download=document.createElement('button');download.textContent='⬇ Download';download.onclick=async()=>{
+  const actions=document.createElement('div');actions.style.cssText='display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end';
+  const download=document.createElement('button');download.type='button';download.textContent='⬇ Download';download.onclick=async()=>{
+   download.disabled=true;
    const {data:blob,error}=await sb.storage.from('angel-memories').download(item.object_path);
-   if(error){alert('ডাউনলোড ব্যর্থ: '+error.message);return}
-   const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=item.file_name;a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);
+   if(error){alert('ডাউনলোড ব্যর্থ: '+error.message);download.disabled=false;return}
+   const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=item.file_name||'download';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);download.disabled=false;
   };
-  const del=document.createElement('button');del.textContent='🗑 Delete';del.className='danger';del.style.marginLeft='8px';del.onclick=async()=>{
+  const del=document.createElement('button');del.type='button';del.textContent='🗑 Delete';del.className='danger';del.onclick=async()=>{
    if(!confirm('এই ফাইলটি স্থায়ীভাবে ডিলিট করবেন?'))return;
    del.disabled=true;
    const removed=await sb.storage.from('angel-memories').remove([item.object_path]);
@@ -649,8 +651,38 @@ async function loadAdminFiles(){
    if(deleted.error){alert('ফাইলের তথ্য ডিলিট হয়নি: '+deleted.error.message);del.disabled=false;return}
    await loadAdminFiles();await loadMyFiles();
   };
-  actions.append(download,del);row.appendChild(actions);host.appendChild(row);
+  actions.append(download,del);
+  if(item.content_type?.startsWith('image/')){
+   const img=document.createElement('img');img.alt=item.file_name||'Photo preview';img.loading='lazy';
+   img.style.cssText='width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in';
+   img.onerror=()=>{previewBox.textContent='⚠️';previewBox.title='ছবি প্রিভিউ লোড হয়নি'};
+   previewBox.appendChild(img);
+   const retry=document.createElement('button');retry.type='button';retry.textContent='↻ Preview';retry.style.cssText='font-size:11px;padding:6px 9px;margin-top:4px';
+   const loadPreview=async()=>{
+    retry.disabled=true;retry.textContent='লোড হচ্ছে...';
+    try{
+     const {data:blob,error:downloadError}=await sb.storage.from('angel-memories').download(item.object_path);
+     if(!downloadError&&blob){
+      const objectUrl=URL.createObjectURL(blob);img.dataset.adminPreviewUrl=objectUrl;img.src=objectUrl;img.onclick=()=>openPhotoView(objectUrl,item);retry.textContent='ছবি দেখুন';retry.disabled=false;return;
+     }
+     const {data:signed,error:signedError}=await sb.storage.from('angel-memories').createSignedUrl(item.object_path,300);
+     if(!signedError&&signed?.signedUrl){img.src=signed.signedUrl;img.onclick=()=>openPhotoView(signed.signedUrl,item);retry.textContent='ছবি দেখুন';retry.disabled=false;return;}
+     retry.textContent='প্রিভিউ পাওয়া যায়নি';retry.title=(downloadError?.message||signedError?.message||'Storage permission/path error');
+    }catch(e){retry.textContent='প্রিভিউ ব্যর্থ';retry.title=e?.message||'Unknown error'}
+    retry.disabled=false;
+   };
+   previewBox.style.display='flex';previewBox.style.flexDirection='column';previewBox.style.height='132px';
+   const imgWrap=document.createElement('div');imgWrap.style.cssText='width:100%;height:100px;display:grid;place-items:center;overflow:hidden';imgWrap.appendChild(img);
+   previewBox.replaceChildren(imgWrap,retry);
+   tasks.push(loadPreview());
+  }else{
+   previewBox.textContent=item.content_type?.startsWith('video/')?'🎬':'📄';
+  }
+  row.append(previewBox,info,actions);host.appendChild(row);
  }
+ await Promise.allSettled(tasks);
+ const failed=host.querySelectorAll('button[title*="Storage"],button[title*="error"]').length;
+ summary.textContent='মোট ফাইল: '+rows.length+' • ছবি প্রিভিউ চেষ্টা সম্পন্ন'+(failed?' • '+failed+'টি প্রিভিউতে সমস্যা':'');
 }
 function openPhotoView(url,item){activePhotoItem=item;photoZoom=1;const modal=document.getElementById('photoView'),img=document.getElementById('photoViewImage');img.src=url;img.style.transform='scale(1)';document.getElementById('photoViewTitle').textContent=item.file_name;document.getElementById('photoDeleteBtn').style.display=currentRole==='admin'?'inline-block':'none';modal.classList.add('open');history.pushState({angelMemories:true,angelMemoriesOverlay:'photo',page:currentPage},'');}
 function zoomPhoto(factor){photoZoom=Math.max(.5,Math.min(4,photoZoom*factor));document.getElementById('photoViewImage').style.transform='scale('+photoZoom+')';}
