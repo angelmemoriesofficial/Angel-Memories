@@ -374,6 +374,89 @@ a{accent-color:#f4c95d}
  .brand strong{letter-spacing:.3px}
 }
 
+
+/* Angel Memories — Light Royal Blue + Gold translucent glass theme */
+:root{
+ --navy:#eaf2ff;--gold:#c69a35;--white:#142b50;
+ --am-glass:rgba(255,255,255,.62);
+ --am-glass-border:rgba(190,151,66,.42);
+}
+html{background:#edf4ff}
+body{
+ color:#18345d!important;
+ background:
+  radial-gradient(ellipse at 8% 0%,rgba(106,160,244,.24),transparent 42%),
+  radial-gradient(ellipse at 94% 12%,rgba(244,211,133,.24),transparent 34%),
+  linear-gradient(145deg,#f7faff 0%,#eaf2ff 52%,#dfeaff 100%)!important;
+ background-attachment:fixed;
+}
+header{
+ background:rgba(248,251,255,.72)!important;
+ border-bottom:1px solid rgba(190,151,66,.55)!important;
+ box-shadow:0 8px 30px rgba(40,75,125,.10)!important;
+ -webkit-backdrop-filter:blur(22px) saturate(160%)!important;
+ backdrop-filter:blur(22px) saturate(160%)!important;
+}
+.brand strong,.hero h1,h2.section-title,.album-tile h3{color:#17427d!important}
+.brand small,nav a,body[data-theme="light"] nav a{color:#29466e!important}
+nav a:hover,nav a.active{color:#9b741f!important;border-bottom-color:#c69a35!important}
+section{color:#18345d}
+.subtitle,.about,.contact-intro{color:#496487!important}
+.panel,.card,.feature,.album-tile,.backup-panel,.vault-panel,
+.album-photo-row,.vault-item,#adminFiles .admin-row,
+#adminFiles .admin-preview,.settings-card,.home-share,.contact-card,
+.modalbox,.admin-tools{
+ background:rgba(255,255,255,.58)!important;
+ color:#18345d!important;
+ border:1px solid rgba(190,151,66,.38)!important;
+ box-shadow:0 12px 34px rgba(48,82,132,.11),inset 0 1px 0 rgba(255,255,255,.86)!important;
+ -webkit-backdrop-filter:blur(20px) saturate(155%)!important;
+ backdrop-filter:blur(20px) saturate(155%)!important;
+}
+.feature,.page-section[data-page="home"] .feature{
+ background:linear-gradient(145deg,rgba(255,255,255,.76),rgba(225,237,255,.58))!important;
+ color:#18345d!important;
+ border-color:rgba(190,151,66,.42)!important;
+}
+.card p,.feature,.settings-card p,.settings-card li,.home-share p,
+.contact-message,.contact-item small,.admin-row small,
+#adminFiles .admin-file-info strong,#adminFiles .admin-file-info small{
+ color:#29466e!important;
+}
+.settings-card h3,.home-share h2,.contact-brand h2,.contact-item b{color:#17427d!important}
+input,select,textarea{
+ background:rgba(255,255,255,.76)!important;color:#18345d!important;
+ border:1px solid rgba(90,128,183,.32)!important;
+ box-shadow:inset 0 1px 4px rgba(37,72,120,.05);
+}
+input::placeholder,textarea::placeholder{color:#7185a3!important}
+button,.header-actions button,.home-share-buttons button,.home-share-buttons .download-apk{
+ background:linear-gradient(135deg,#fff4d3 0%,#e8c66f 52%,#c69a35 100%)!important;
+ color:#18345d!important;border:1px solid rgba(171,128,37,.48)!important;
+ box-shadow:0 6px 18px rgba(61,84,119,.14),inset 0 1px 0 rgba(255,255,255,.85)!important;
+}
+.actions.page-section.active-page{background:rgba(225,237,255,.55)!important}
+.hero.page-section.active-page{
+ background:
+  radial-gradient(ellipse at 50% 0%,rgba(255,255,255,.8),transparent 55%),
+  linear-gradient(145deg,#e8f1ff,#dce9fc)!important;
+}
+.hero.page-section.active-page:before{background:radial-gradient(ellipse at center,transparent 45%,rgba(76,112,164,.08) 100%)!important}
+.hero-banner-image{box-shadow:0 16px 42px rgba(46,77,122,.16),0 0 0 1px rgba(190,151,66,.28)!important}
+footer{background:rgba(229,238,251,.82)!important;color:#29466e!important;border-top:1px solid rgba(190,151,66,.48)!important}
+footer p{color:#496487!important}
+.modal{background:rgba(35,57,91,.28)!important;backdrop-filter:blur(7px)}
+.modalbox{background:rgba(250,252,255,.88)!important;color:#18345d!important}
+.photo-view{background:rgba(20,36,60,.82)!important;backdrop-filter:blur(12px)}
+#adminFiles .admin-preview{background:rgba(225,237,252,.72)!important}
+.contact-item{background:rgba(255,255,255,.55)!important;color:#18345d!important;border-color:rgba(104,139,188,.3)!important}
+.contact-item b{color:#17427d!important}
+.album-photo-row,.vault-item{color:#29466e!important}
+@media(max-width:650px){
+ header{background:rgba(248,251,255,.84)!important}
+ .brand small{color:#496487!important}
+}
+
 </style>
 </head>
 <body>
