@@ -678,6 +678,85 @@ body[data-theme="light"] .settings-card,body[data-theme="light"] .panel,body[dat
 }
 
 
+
+/* Angel Memories — Royal Blue Glass final theme */
+:root{
+ --navy:#071a38!important;--gold:#e9c875!important;--white:#f5f8ff!important;
+ --blue-glass:rgba(13,39,79,.58);--blue-glass-deep:rgba(5,20,48,.84);
+ --blue-line:rgba(157,194,255,.28);--blue-glow:rgba(68,139,255,.22);
+}
+html,body{
+ background:#06152f!important;color:#f4f7ff!important;
+}
+body{
+ background:
+  radial-gradient(ellipse at 12% 4%,rgba(44,104,190,.28),transparent 38%),
+  radial-gradient(ellipse at 88% 24%,rgba(24,74,145,.22),transparent 42%),
+  linear-gradient(145deg,#071a38 0%,#06132b 55%,#030b1c 100%)!important;
+ background-attachment:fixed!important;
+}
+header{
+ background:rgba(5,20,48,.82)!important;
+ border-bottom:1px solid rgba(233,200,117,.58)!important;
+ box-shadow:0 10px 35px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.08)!important;
+ -webkit-backdrop-filter:blur(22px) saturate(145%)!important;
+ backdrop-filter:blur(22px) saturate(145%)!important;
+}
+nav a{color:#e8efff!important}
+nav a:hover,nav a.active{color:#f0d58e!important;border-bottom-color:#e9c875!important}
+.brand strong,.hero h1,h2.section-title,.contact-brand h2,.settings-card h3,
+.home-share h2,.album-tile h3{color:#efd48b!important}
+button,.home-share-buttons button,.home-share-buttons .download-apk{
+ background:linear-gradient(135deg,#f4dfa5 0%,#e6c36d 52%,#bd913e 100%)!important;
+ color:#101d36!important;border:1px solid rgba(255,239,190,.85)!important;
+ box-shadow:0 5px 18px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.55)!important;
+}
+.panel,.admin-tools,.settings-card,.feature,.card,.home-share,.contact-card,
+.album-tile,.modalbox,.backup-panel,.vault-panel{
+ background:linear-gradient(145deg,rgba(20,52,99,.62),rgba(5,22,52,.76))!important;
+ border:1px solid var(--blue-line)!important;
+ box-shadow:0 14px 36px rgba(0,0,0,.27),inset 0 1px 0 rgba(255,255,255,.09)!important;
+ -webkit-backdrop-filter:blur(20px) saturate(145%)!important;
+ backdrop-filter:blur(20px) saturate(145%)!important;
+}
+.feature{border-color:rgba(233,200,117,.42)!important}
+.feature:hover,.feature:focus-visible{box-shadow:0 12px 30px rgba(0,0,0,.35),0 0 22px var(--blue-glow)!important}
+.card{overflow:hidden}
+.card img,.card video{background:#071a38}
+input,textarea,select{
+ background:rgba(3,16,39,.72)!important;color:#f4f7ff!important;
+ border:1px solid rgba(153,190,245,.42)!important;
+}
+input::placeholder,textarea::placeholder{color:#b8c8e5!important}
+footer{
+ background:rgba(3,12,29,.9)!important;
+ border-top:1px solid rgba(233,200,117,.48)!important;
+ -webkit-backdrop-filter:blur(18px)!important;backdrop-filter:blur(18px)!important;
+}
+.contact-item,.album-photo-row,.vault-item{
+ background:rgba(4,19,45,.58)!important;
+ border-color:rgba(153,190,245,.28)!important;
+}
+.contact-item b{color:#efd48b!important}
+.hero.page-section.active-page{
+ background:
+  radial-gradient(ellipse at 50% 0%,rgba(53,116,205,.22),transparent 52%),
+  linear-gradient(145deg,#0b2854 0%,#061a3a 55%,#030d20 100%)!important;
+}
+.hero-banner-image{
+ border-color:rgba(233,200,117,.72)!important;
+ box-shadow:0 0 0 4px rgba(100,157,235,.08),0 18px 48px rgba(0,0,0,.48),0 0 28px rgba(57,122,214,.18)!important;
+}
+.actions.page-section.active-page{
+ background:linear-gradient(180deg,rgba(6,22,49,.9),rgba(8,31,66,.92))!important;
+}
+.actions.page-section.active-page:before{background:linear-gradient(90deg,transparent,#e9c875,transparent)!important}
+.subtitle,.about,.contact-message,.contact-intro{color:#d5e2fa!important}
+.empty{color:#c3d2ed!important}
+@media(prefers-reduced-transparency:reduce){
+ header,.panel,.admin-tools,.settings-card,.feature,.card,.home-share,.contact-card,.album-tile,.modalbox{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+}
+
 </style>
 
 </head>
